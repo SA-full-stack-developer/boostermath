@@ -1,3 +1,7 @@
+const BM_VER="1.1";
+(function(){const show=m=>{const l=document.getElementById("ld");if(l){l.hidden=false;l.textContent="Error ("+BM_VER+"): "+m}};
+window.addEventListener("error",e=>show((e.message||"desconocido")+" ["+String(e.filename||"").split("/").pop()+":"+e.lineno+"]"));
+window.addEventListener("unhandledrejection",e=>show(String(e.reason&&e.reason.message||e.reason)))})();
 const NS="boostermath.v1.";
 const LS={get(k){try{return JSON.parse(localStorage.getItem(NS+k))}catch(e){return null}},set(k,v){try{localStorage.setItem(NS+k,JSON.stringify(v));return true}catch(e){return false}},del(k){try{localStorage.removeItem(NS+k)}catch(e){}}};
 const CUSTOM_CSV="# nombre;sobres;pvp;extras (descripcion:valor|descripcion:valor);origen;idioma;fecha(AAAA-MM-DD)\n# Con 0 sobres el producto es solo referencia: se compara contra su PVP en euros\n";
@@ -123,4 +127,4 @@ if(!EXPS.length)EXPS.push(newBlank());
 const h=decodeURIComponent((location.hash||"").slice(1));
 const start=EXPS.find(e=>e.id===h)||EXPS.find(e=>e.id===meta.cur)||EXPS[0];
 buildSel();openExp(start)}
-init();
+init().catch(e=>{const l=document.getElementById("ld");l.hidden=false;l.textContent="Error al iniciar ("+BM_VER+"): "+(e&&e.message||e)});
