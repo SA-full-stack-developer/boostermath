@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BoosterMath · precio por sobre de cartas</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%83%8F%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css"></head><body>
+<h1>BoosterMath <span class="sub">precio por sobre de cartas</span></h1>
+<div class="xbar"><select id="xp" aria-label="Expansión"></select></div>
+<div id="nxp" hidden><input id="nxn" placeholder="Nombre de la nueva expansión"><button type="button" id="nxc">Crear</button></div>
+<div class="ld" id="ld" hidden></div><div class="warn" id="warn" hidden></div>
+<div id="hd"></div>
+<div class="cfg">
+<label>Ideal (verde) ≤ €/sobre<input id="ok" inputmode="decimal"></label>
+<label>Máximo (ámbar) ≤ €/sobre<input id="mx" inputmode="decimal"></label>
+</div>
+<details><summary>Tipos de cambio (unidades por 1 euro)</summary><div class="cfg" id="fx"></div><p class="hint" id="fxn"></p></details>
+<div class="card" id="free"><div class="top"><b>Cálculo libre</b></div>
+<div class="row" style="margin-top:6px"><input id="fk" inputmode="numeric" placeholder="Sobres"><input id="fp" inputmode="decimal" placeholder="Precio €"><div class="res" id="fr">—</div></div></div>
+<details class="card"><summary><b>＋ Añadir hallazgo</b></summary>
+<select id="fs"></select><div id="np" hidden><input id="nn" placeholder="Nombre del producto nuevo"><input id="nk" inputmode="numeric" placeholder="Sobres (0 si no trae)"><input id="ne" placeholder="Extras opcional: descripcion:valor|descripcion:valor"><label class="hint">Fecha de salida (opcional)<input id="nd" type="date"></label></div><input id="ft" placeholder="Tienda" list="shops"><datalist id="shops"></datalist><input id="fpr" inputmode="decimal" placeholder="Precio €"><select id="fl"><option>ES</option><option>EN</option><option>JP</option><option>KO</option><option>ZH</option></select><input id="fu" type="url" placeholder="Enlace (opcional)"><button type="button" id="fa" style="width:100%">&#9989; Disponible</button><button id="fb">Añadir</button></details>
+<input id="q" type="search" list="pl" placeholder="Buscar producto…" style="margin:8px 0">
+<input id="ph" type="file" accept="image/*" hidden><datalist id="pl"></datalist><div id="list"></div>
+<details><summary>Datos: exportar e importar</summary><p class="hint">Todo se guarda solo en este navegador. Exporta para llevarlo a otro dispositivo: «Exportar» baja esta expansión y «Exportar todo» todas las que tengas con datos. Al importar, los hallazgos se fusionan y lo demás se reemplaza; si el archivo trae una expansión nueva, se crea.</p><label class="hint"><input type="checkbox" id="wi" style="width:auto;margin:0 6px 0 0">Incluir fotos (pesa más)</label><textarea id="dt" spellcheck="false" style="height:120px" placeholder="Aquí aparece el texto exportado. Para importar, pega aquí el texto o carga un archivo."></textarea><div class="btns"><button id="ex">Exportar</button><button id="exa">Exportar todo</button><button id="ec">Copiar</button><button id="im">Importar</button><button id="rx" class="rm">Restablecer expansión</button></div><input id="fi" type="file" accept=".json,application/json,text/plain" style="margin-top:8px"><p class="hint" id="st"></p></details>
+<details><summary>Catálogo (plantilla editable)</summary>
+<p class="hint">Una línea por producto: nombre;sobres;PVP;extras;origen. Los extras van como descripción:valor€ separados por | y el origen es texto libre (precio oficial local). Con 0 sobres el producto es solo referencia. El PVP puede ir en euros (15,99) o en otra moneda (68 CNY, 7200 JPY, 70000 KRW, 1980 TWD, 750 HKD) y se convierte con los tipos de cambio. Si una carta vale distinto seg&uacute;n el idioma, escribe su valor as&iacute;: ES=30 EN=32 JP=45 (en vez de un solo n&uacute;mero). Se usa el del idioma del producto, que se deduce del nombre (JP, KR, CN) o se fija en una sexta columna (ES, EN, JP, KO, ZH). Las líneas con # se ignoran. Los valores de extras son estimaciones: ajústalos a tu criterio. Para otra expansión usa «+ Nueva expansión...» arriba.</p>
+<textarea id="csv" spellcheck="false"></textarea>
+<div class="btns"><button id="apply">Aplicar</button><button id="cp">Copiar</button><button id="rs">Restaurar</button></div></details>
+<footer>BoosterMath · los datos se guardan solo en tu navegador</footer>
+<script src="app.js"></script></body></html>
