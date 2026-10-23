@@ -1,0 +1,11 @@
+[
+ {
+  "id": "pokemon",
+  "name": "Pokémon",
+  "icon": "⚡",
+  "expansions": [
+   "dominio-delta.json",
+   "30-aniversario.json"
+  ]
+ }
+]

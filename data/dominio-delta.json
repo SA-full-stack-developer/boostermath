@@ -33,62 +33,8 @@
  },
  "fxNote": "CNY, HKD y KRW: referencia BCE del 16/10/2026. JPY y TWD: aproximados (mercado, mediados de octubre). Editables.",
  "csv": "# nombre;sobres;pvp;extras (descripcion:valor|descripcion:valor);origen;idioma;fecha(AAAA-MM-DD)\n# Con 0 sobres el producto es solo referencia: se compara contra su PVP en euros\n# Valores de extras ESTIMADOS (los promos aun no se venden sueltos en Cardmarket). Ajustalos a tu criterio.\n# --- Europa (ES/EN) ---\nBlíster 1 sobre (Spritzee);1;;Promo Spritzee (MEP 115):1|Moneda jumbo Totodile:1,5;Sin PVP comunicado;ES;2026-11-06\nBlíster 3 sobres (Seel);3;17,99;Promo Seel (MEP 116):1,5;PVP estimado: precio anunciado en tiendas francesas (PokéItem 27/09/2026). EE. UU. 13,99 $;ES;2026-11-06\nBooster Bundle 6 sobres;6;27,99;;Precio Pokémon Center Alemania en preventa (EE. UU. 26,94 $). Tiendas francesas lo anuncian a 35,99 €;ES;2026-11-06\nCaja Combina y Combate 4 sobres;4;;Mazo de 40 cartas jugable:3|Promo foil sellada con logo Dominio Delta (1 de 4):2;Sin PVP en España (EE. UU. 21,99 $). Prelanzamiento desde el 24/10;ES;2026-10-24\nETB 9 sobres;9;55,99;Promo foil Kyogre (MEP 117):ES=5 EN=6|65 fundas Mega-Rayquaza:4|45 energías:0,5|Dados, moneda y contadores:1,5|Caja y separadores:2,5;PVP estimado: precio anunciado en tiendas francesas (PokéItem 27/09/2026), sin PVP oficial en España. EE. UU. 49,99 $;ES;2026-11-06\nETB Pokémon Center 11 sobres;11;;Promo foil Kyogre (MEP 117):ES=5 EN=6|Promo Kyogre con sello Pokémon Center:10|65 fundas Mega-Rayquaza:4|45 energías:0,5|Dados, moneda y contadores:1,5|Caja y separadores:2,5;Solo Pokémon Center de EE. UU., Canadá y Reino Unido (59,99 $). En España solo por importación;EN;2026-11-06\nMedia caja 18 sobres;18;;;Sin PVP. Referencia: la mitad de la caja de 36;ES;2026-11-06\nCaja 36 sobres;36;165,99;;Precio Pokémon Center Alemania en preventa (EE. UU. 161,64 $). Tiendas francesas la anuncian entre 180 y 249 €;ES;2026-11-06\n# --- Japón (Storm Emeralda, M6) ---\nCaja 30 sobres JP;30;6000 JPY;;200 yenes por sobre (5 cartas);JP;2026-07-31\nStarter Set ex JP (3 versiones);0;1800 JPY;Mazo de 60 cartas:0|Tapete:0|Moneda:0|Contadores y guía:0;Sin sobres. Eevee ex, Zorua y Zoroark ex o Sprigatito y Meowscarada ex, 1.800 yenes cada uno;JP;2026-07-31\n# --- Corea ---\nCaja 30 sobres KR;30;45000 KRW;;1.500 won por sobre (5 cartas);KO;2026-08-21\n# --- Taiwán / Hong Kong (Emerald Storm = Storm Emeralda) ---\nCaja 30 sobres TW/HK;30;1620 TWD;;54 TWD por sobre. En Hong Kong 13 HKD por sobre (caja no verificada);ZH;2026-08-07\n10 sobres PLUS TW/HK;10;594 TWD;Pack extra de 8 cartas (3 foil y 5 energías foil):1,5|Caja de cartón:0,3;HK$143 en Hong Kong;ZH;2026-08-07\nPack Compañero Mega TW/HK;40;2342 TWD;Marco de carta Mega Rayquaza:2|Pack extra de 8 cartas:1,5;HK$564 en Hong Kong. Garantiza 1 Mega ex;ZH;2026-08-07\n# --- China continental: sin producto de esta expansión encontrado ---",
- "finds": [
-  {
-   "n": "ETB 9 sobres",
-   "s": "Flash Store",
-   "l": "ES",
-   "p": 66.9,
-   "u": "https://flashstore.es/producto/dominio-delta-etb/",
-   "a": false,
-   "t": 1792300002000
-  },
-  {
-   "n": "ETB 9 sobres",
-   "s": "Flash Store",
-   "l": "EN",
-   "p": 84.9,
-   "u": "https://flashstore.es/producto/dominio-delta-etb/",
-   "a": false,
-   "t": 1792300003000
-  },
-  {
-   "n": "Caja 36 sobres",
-   "s": "Flash Store",
-   "l": "ES",
-   "p": 189.9,
-   "u": "https://flashstore.es/producto/dominio-delta-caja-36/",
-   "a": false,
-   "t": 1792300010000
-  },
-  {
-   "n": "Caja 36 sobres",
-   "s": "Flash Store",
-   "l": "EN",
-   "p": 229.9,
-   "u": "https://flashstore.es/producto/dominio-delta-caja-36/",
-   "a": false,
-   "t": 1792300011000
-  },
-  {
-   "n": "Caja 30 sobres JP",
-   "s": "Metamorph Center",
-   "l": "JP",
-   "p": 95.95,
-   "u": "https://metamorphcenter.com/products/caja-storm-emeralda-pokemon-japones",
-   "a": true,
-   "t": 1792300012000
-  },
-  {
-   "n": "Caja 30 sobres KR",
-   "s": "Metamorph Center",
-   "l": "KO",
-   "p": 62.95,
-   "u": "https://metamorphcenter.com/products/caja-storm-emeralda-pokemon-coreano",
-   "a": false,
-   "t": 1792300013000
-  }
- ],
+ "finds": [],
  "noex": {},
- "dates": {}
+ "dates": {},
+ "serie": "Megaevolución"
 }
