@@ -543,10 +543,16 @@ function render() {
   if (!cur) return;
   hdr();
   fillShops();
-  const keep = {};
+  const keep = {},
+    opened = {},
+    sy = window.scrollY;
   document.querySelectorAll("#list .card").forEach((c) => {
     const i = c.querySelector(".pp");
     if (i) keep[c.dataset.n] = i.value;
+    opened[c.dataset.n] = [".fd", ".sh", ".mo"].filter((s) => {
+      const d = c.querySelector(s);
+      return d && d.open;
+    });
   });
   const q = $("q").value.toLowerCase(),
     L = $("list"),
@@ -594,6 +600,10 @@ function render() {
     c.dataset.n = x.n;
     c.innerHTML = `<div class="top"><button class="th" type="button" aria-label="Foto"></button><div class="side"><div class="ic"><button class="x av own" type="button"></button><button class="x rm" type="button" title="Eliminar producto" aria-label="Eliminar producto">\uD83D\uDDD1\uFE0F</button></div><button class="nx" type="button"></button></div><div class="tt"><b class="nm"></b><span class="mt"></span></div></div><div class="lim"></div><div class="row"><input class="pp" inputmode="decimal" placeholder="Precio \u20ac en tienda" aria-label="Precio en tienda"><div class="res">\u2014</div></div><div class="brk"></div><details class="fd"><summary></summary><ul></ul></details><details class="sh"><summary>Buscar en tiendas</summary><div class="shl"></div></details><details class="mo"><summary>Detalles</summary><div class="desc"></div><div class="desc org"></div><div class="phr"><input class="pu" type="url" placeholder="URL de la foto (https://\u2026)" aria-label="URL de la foto"><button type="button" class="pg">Guardar</button><button type="button" class="pf">Subir</button></div></details>`;
     c.querySelector(".nm").textContent = x.n;
+    (opened[x.n] || []).forEach((s) => {
+      const d = c.querySelector(s);
+      if (d) d.open = true;
+    });
     const mt = c.querySelector(".mt"),
       mtx = () => {
         const fe =
@@ -745,6 +755,7 @@ function render() {
     finds(x, c);
     if (q && x.n.toLowerCase() === q) c.querySelector(".fd").open = true;
   });
+  window.scrollTo(0, sy);
 }
 let phT = null;
 $("ph").onchange = (e) => {
