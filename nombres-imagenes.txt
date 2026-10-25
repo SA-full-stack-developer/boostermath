@@ -1,0 +1,47 @@
+
+=== Celebración 30.º Aniversario (30th Celebration)  ->  assets/productos/30-aniversario/ ===
+blister-2-sobres-knock-out.png    <-  Blíster 2 sobres (Knock Out)
+minilata-2-sobres.png    <-  Minilata 2 sobres
+pegatinas-3-sobres.png    <-  Pegatinas + 3 sobres
+poster-3-sobres.png    <-  Póster + 3 sobres
+caja-ex-4-sobres.png    <-  Caja ex + 4 sobres
+lata-ex-4-sobres.png    <-  Lata ex + 4 sobres
+booster-bundle-6-sobres.png    <-  Booster Bundle 6 sobres
+album-5-sobres.png    <-  Álbum + 5 sobres
+coleccion-figura-mew-mewtwo-5-sobres.png    <-  Colección figura Mew/Mewtwo + 5 sobres
+premium-ditto-8-sobres.png    <-  Premium Ditto 8 sobres
+etb-9-sobres.png    <-  ETB 9 sobres
+etb-pokemon-center-11-sobres.png    <-  ETB Pokémon Center 11 sobres
+ultra-premium-dia-noche-29-sobres.png    <-  Ultra-Premium Día/Noche 29 sobres
+mazo-de-combate-espeon-o-umbreon-ex.png    <-  Mazo de Combate Espeon o Umbreon ex
+caja-20-sobres-jp.png    <-  Caja 20 sobres JP
+card-set-jp-iniciales-2-sobres.png    <-  Card Set JP iniciales 2 sobres
+premium-deck-set-espeon-umbreon-jp.png    <-  Premium Deck Set Espeon+Umbreon JP
+caja-20-sobres-kr.png    <-  Caja 20 sobres KR
+caja-20-sobres-cn.png    <-  Caja 20 sobres CN
+set-monedas-cn.png    <-  Set monedas CN
+set-expositor-cn-sylveon-greninja-ex.png    <-  Set expositor CN (Sylveon/Greninja ex)
+set-figura-pikachu-cn.png    <-  Set figura Pikachu CN
+mazo-de-lujo-espeon-o-umbreon-cn.png    <-  Mazo de lujo Espeon o Umbreon CN
+caja-coleccionista-espeon-umbreon-cn.png    <-  Caja coleccionista Espeon+Umbreon CN
+caja-charizard-cn.png    <-  Caja Charizard CN
+caja-20-sobres-tw-hk.png    <-  Caja 20 sobres TW/HK
+mazo-espeon-umbreon-tw-hk.png    <-  Mazo Espeon+Umbreon TW/HK
+especial-primeros-companeros-tw-hk.png    <-  Especial Primeros compañeros TW/HK
+futuristic-box-jp-kr-cn-tw.png    <-  Futuristic Box JP/KR/CN/TW
+
+=== Megaevolución: Dominio Delta (Delta Reign) · Storm Emeralda (M6)  ->  assets/productos/dominio-delta/ ===
+blister-1-sobre-spritzee.png    <-  Blíster 1 sobre (Spritzee)
+blister-3-sobres-seel.png    <-  Blíster 3 sobres (Seel)
+booster-bundle-6-sobres.png    <-  Booster Bundle 6 sobres
+caja-combina-y-combate-4-sobres.png    <-  Caja Combina y Combate 4 sobres
+etb-9-sobres.png    <-  ETB 9 sobres
+etb-pokemon-center-11-sobres.png    <-  ETB Pokémon Center 11 sobres
+media-caja-18-sobres.png    <-  Media caja 18 sobres
+caja-36-sobres.png    <-  Caja 36 sobres
+caja-30-sobres-jp.png    <-  Caja 30 sobres JP
+starter-set-ex-jp-3-versiones.png    <-  Starter Set ex JP (3 versiones)
+caja-30-sobres-kr.png    <-  Caja 30 sobres KR
+caja-30-sobres-tw-hk.png    <-  Caja 30 sobres TW/HK
+10-sobres-plus-tw-hk.png    <-  10 sobres PLUS TW/HK
+pack-companero-mega-tw-hk.png    <-  Pack Compañero Mega TW/HK

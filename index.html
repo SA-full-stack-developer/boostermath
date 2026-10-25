@@ -1,70 +1,315 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>BoosterMath · precio por sobre de cartas TCG</title>
-<meta name="description" content="Calcula cuánto pagas realmente por cada sobre de cartas TCG descontando el valor de los extras.">
-<meta name="theme-color" content="#2563eb">
-<link rel="icon" href="favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="assets/icon-192.png">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="style.css"></head><body>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>BoosterMath · precio por sobre de cartas TCG</title>
+    <meta
+      name="description"
+      content="Calcula cuánto pagas realmente por cada sobre de cartas TCG descontando el valor de los extras."
+    />
+    <meta name="theme-color" content="#2563eb" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="assets/icon-192.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <h1 class="logo">
+        <img
+          src="assets/logo.png"
+          alt="BoosterMath"
+          onerror="
+            this.parentNode.classList.add('nologo');
+            this.replaceWith(document.createTextNode('BoosterMath'));
+          "
+        />
+      </h1>
+      <button type="button" id="ins" class="ins" hidden>⬇ Instalar</button>
+    </header>
 
-<header class="hero">
-<h1 class="logo"><img src="assets/logo.png" alt="BoosterMath" onerror="this.parentNode.classList.add('nologo');this.replaceWith(document.createTextNode('BoosterMath'))"></h1>
-<button type="button" id="ins" class="ins" hidden>⬇ Instalar</button>
-</header>
+    <details class="card help" id="help" open>
+      <summary>💡 ¿Qué es BoosterMath y cómo se usa?</summary>
+      <p>
+        BoosterMath te dice <b>cuánto pagas de verdad por cada sobre</b> de un
+        producto de cartas: al precio le resta lo que valen los extras (promos,
+        monedas, fundas, figuras…) y lo divide entre el número de sobres. Así
+        sabes si una oferta compensa.
+      </p>
+      <ol>
+        <li><b>Elige juego y expansión</b> en los selectores de abajo.</li>
+        <li>
+          <b>Escribe el precio</b> que ves en una tienda en la ficha del
+          producto: te dice si es <span class="t ok">Compra</span>,
+          <span class="t wa">Aceptable</span> o
+          <span class="t ko">Caro</span> según tus umbrales.
+        </li>
+        <li>
+          <b>Guarda hallazgos</b> (tienda, idioma, precio y enlace) para
+          comparar y ver cómo cambian.
+        </li>
+        <li>
+          <b>Marca 📦</b> los productos que tienes sin abrir y usa
+          <b>filtros y orden</b> para encontrar lo mejor.
+        </li>
+        <li>
+          <b>Exporta tus datos</b> para llevarlos a otro dispositivo o guardar
+          una copia.
+        </li>
+      </ol>
+    </details>
 
-<details class="card help" id="help" open>
-<summary>💡 ¿Qué es BoosterMath y cómo se usa?</summary>
-<p>BoosterMath te dice <b>cuánto pagas de verdad por cada sobre</b> de un producto de cartas: al precio le resta lo que valen los extras (promos, monedas, fundas, figuras…) y lo divide entre el número de sobres. Así sabes si una oferta compensa.</p>
-<ol>
-<li><b>Elige juego y expansión</b> en los selectores de abajo.</li>
-<li><b>Escribe el precio</b> que ves en una tienda en la ficha del producto: te dice si es <span class="t ok">Compra</span>, <span class="t wa">Aceptable</span> o <span class="t ko">Caro</span> según tus umbrales.</li>
-<li><b>Guarda hallazgos</b> (tienda, idioma, precio y enlace) para comparar y ver cómo cambian.</li>
-<li><b>Marca 📦</b> los productos que tienes sin abrir y usa <b>filtros y orden</b> para encontrar lo mejor.</li>
-<li><b>Exporta tus datos</b> para llevarlos a otro dispositivo o guardar una copia.</li>
-</ol>
-</details>
+    <div class="notice" id="nt1">
+      <span class="ni">⚠️</span>
+      <div>
+        <b>Tus datos se guardan solo en este navegador.</b> No hay cuenta ni
+        servidor: si borras los datos del navegador o cambias de dispositivo, se
+        pierden. <a href="#datos">Exporta una copia</a> de vez en cuando.
+      </div>
+      <div>
+        Los datos se introducen a mano y puede que no se actualicen con el
+        tiempo; cuando entres, si están desactualizados los precios de los
+        productos, es posible, tenlo en cuenta. Son cálculos aproximados,
+        siempre se puede usar el botón de extras contados y no contados para
+        cambiar los cálculos.
+      </div>
+    </div>
 
-<div class="notice" id="nt1"><span class="ni">⚠️</span><div><b>Tus datos se guardan solo en este navegador.</b> No hay cuenta ni servidor: si borras los datos del navegador o cambias de dispositivo, se pierden. <a href="#datos">Exporta una copia</a> de vez en cuando.</div></div>
+    <nav class="games" id="games" aria-label="Juego"></nav>
+    <button type="button" id="xpb" class="picker" aria-haspopup="dialog">
+      <span><b id="xpn">—</b><small id="xps2"></small></span
+      ><span aria-hidden="true">▾</span>
+    </button>
+    <div class="ld" id="ld" hidden></div>
+    <div class="warn" id="warn" hidden></div>
+    <div id="hd"></div>
+    <div class="flex">
+      <div>
+        <div class="cfg">
+          <label
+            >Ideal (verde) ≤ €/sobre<input id="ok" inputmode="decimal"
+          /></label>
+          <label
+            >Máximo (ámbar) ≤ €/sobre<input id="mx" inputmode="decimal"
+          /></label>
+        </div>
+      </div>
+      <div class="flex40">
+        <div class="card free" id="free">
+          <b>Coste producto/cantidad de sobres</b
+          ><input
+            id="fk"
+            inputmode="numeric"
+            placeholder="Sobres"
+            aria-label="Sobres"
+          /><input
+            id="fp"
+            inputmode="decimal"
+            placeholder="Precio €"
+            aria-label="Precio en euros"
+          />
+          <div class="res" id="fr">—</div>
+        </div>
+      </div>
+    </div>
+    <details id="conversor">
+      <summary>Tipos de cambio (unidades por 1 euro)</summary>
+      <div class="cfg" id="fx"></div>
+      <p class="hint" id="fxn"></p>
+    </details>
 
-<nav class="games" id="games" aria-label="Juego"></nav>
-<button type="button" id="xpb" class="picker" aria-haspopup="dialog"><span><b id="xpn">—</b><small id="xps2"></small></span><span aria-hidden="true">▾</span></button>
-<div class="ld" id="ld" hidden></div><div class="warn" id="warn" hidden></div>
-<div id="hd"></div>
+    <details class="card">
+      <summary><b>＋ Añadir hallazgo</b></summary>
+      <select id="fs"></select>
+      <div id="np" hidden>
+        <input id="nn" placeholder="Nombre del producto nuevo" /><input
+          id="nk"
+          inputmode="numeric"
+          placeholder="Sobres (0 si no trae)"
+        /><input
+          id="ne"
+          placeholder="Extras opcional: descripcion:valor|descripcion:valor"
+        /><label class="hint"
+          >Fecha de salida (opcional)<input id="nd" type="date"
+        /></label>
+      </div>
+      <input id="ft" placeholder="Tienda" list="shops" /><datalist
+        id="shops"
+      ></datalist
+      ><input id="fpr" inputmode="decimal" placeholder="Precio €" /><select
+        id="fl"
+      >
+        <option>ES</option>
+        <option>EN</option>
+        <option>JP</option>
+        <option>KO</option>
+        <option>ZH</option></select
+      ><input id="fu" type="url" placeholder="Enlace (opcional)" /><button
+        type="button"
+        id="fa"
+        style="width: 100%"
+      >
+        &#9989; Disponible</button
+      ><button id="fb">Añadir</button>
+    </details>
+    <div class="flex">
+      <input
+        id="q"
+        type="search"
+        list="pl"
+        placeholder="Buscar producto…"
+        class="srch flex40"
+      />
+      <div class="srt flex40">
+        <select id="so" aria-label="Ordenar">
+          <option value="cat">Orden del catálogo</option>
+          <option value="best">Mejor €/sobre primero</option>
+          <option value="worst">Peor €/sobre primero</option>
+          <option value="kasc">Menos sobres primero</option>
+          <option value="kdesc">Más sobres primero</option>
+          <option value="pasc">PVP menor primero</option>
+          <option value="pdesc">PVP mayor primero</option>
+          <option value="name">Nombre A-Z</option>
+          <option value="dasc">Salida: más antiguos primero</option>
+          <option value="ddesc">Salida: más recientes primero</option></select
+        ><span class="hint" id="cnt"></span>
+      </div>
+    </div>
 
-<div class="cfg">
-<label>Ideal (verde) ≤ €/sobre<input id="ok" inputmode="decimal"></label>
-<label>Máximo (ámbar) ≤ €/sobre<input id="mx" inputmode="decimal"></label>
-</div>
-<details><summary>Tipos de cambio (unidades por 1 euro)</summary><div class="cfg" id="fx"></div><p class="hint" id="fxn"></p></details>
-<div class="card free" id="free"><b>🧮 Libre</b><input id="fk" inputmode="numeric" placeholder="Sobres" aria-label="Sobres"><input id="fp" inputmode="decimal" placeholder="Precio €" aria-label="Precio en euros"><div class="res" id="fr">—</div></div>
-<details class="card"><summary><b>＋ Añadir hallazgo</b></summary>
-<select id="fs"></select><div id="np" hidden><input id="nn" placeholder="Nombre del producto nuevo"><input id="nk" inputmode="numeric" placeholder="Sobres (0 si no trae)"><input id="ne" placeholder="Extras opcional: descripcion:valor|descripcion:valor"><label class="hint">Fecha de salida (opcional)<input id="nd" type="date"></label></div><input id="ft" placeholder="Tienda" list="shops"><datalist id="shops"></datalist><input id="fpr" inputmode="decimal" placeholder="Precio €"><select id="fl"><option>ES</option><option>EN</option><option>JP</option><option>KO</option><option>ZH</option></select><input id="fu" type="url" placeholder="Enlace (opcional)"><button type="button" id="fa" style="width:100%">&#9989; Disponible</button><button id="fb">Añadir</button></details>
+    <details class="flt" id="flt">
+      <summary id="fsum">Filtros</summary>
+      <div id="fc"></div>
+    </details>
+    <input id="ph" type="file" accept="image/*" hidden /><datalist
+      id="pl"
+    ></datalist>
+    <div id="list"></div>
 
-<input id="q" type="search" list="pl" placeholder="Buscar producto…" class="srch">
-<div class="srt"><select id="so" aria-label="Ordenar"><option value="cat">Orden del catálogo</option><option value="best">Mejor €/sobre primero</option><option value="worst">Peor €/sobre primero</option><option value="kasc">Menos sobres primero</option><option value="kdesc">Más sobres primero</option><option value="pasc">PVP menor primero</option><option value="pdesc">PVP mayor primero</option><option value="name">Nombre A-Z</option><option value="dasc">Salida: más antiguos primero</option><option value="ddesc">Salida: más recientes primero</option></select><span class="hint" id="cnt"></span></div>
-<details class="flt" id="flt"><summary id="fsum">Filtros</summary><div id="fc"></div></details>
-<input id="ph" type="file" accept="image/*" hidden><datalist id="pl"></datalist><div id="list"></div>
+    <details id="datos">
+      <summary>Datos: exportar e importar</summary>
+      <div class="notice big">
+        <span class="ni">⚠️</span>
+        <div>
+          <b>Atención: tus datos solo existen en este navegador.</b
+          ><br />Hallazgos, ediciones, fotos, marcas 📦 y ajustes no se envían a
+          ningún servidor. Para llevarlos a otro dispositivo o conservarlos,
+          <b>exporta</b> y guarda el archivo. «Exportar» baja esta expansión y
+          «Exportar todo» todas las que tengan datos. Al importar, los hallazgos
+          se fusionan y lo demás se reemplaza; si el archivo trae una expansión
+          nueva, se crea.
+        </div>
+      </div>
+      <label class="hint"
+        ><input
+          type="checkbox"
+          id="wi"
+          style="width: auto; margin: 0 6px 0 0"
+        />Incluir fotos subidas (pesa más)</label
+      ><textarea
+        id="dt"
+        spellcheck="false"
+        style="height: 120px"
+        placeholder="Aquí aparece el texto exportado. Para importar, pega aquí el texto o carga un archivo."
+      ></textarea>
+      <div class="btns">
+        <button id="ex">Exportar</button><button id="exa">Exportar todo</button
+        ><button id="ec">Copiar</button><button id="im">Importar</button
+        ><button id="rx" class="rm">Restablecer expansión</button>
+      </div>
+      <input
+        id="fi"
+        type="file"
+        accept=".json,application/json,text/plain"
+        style="margin-top: 8px"
+      />
+      <p class="hint" id="st"></p>
+    </details>
+    <details id="catalogo">
+      <summary>Catálogo de la expansión</summary>
+      <p class="hint">
+        Una línea por producto:
+        nombre;sobres;PVP;extras;origen;idioma;fecha;foto. Los extras van como
+        descripción:valor€ separados por | y el origen es texto libre (precio
+        oficial local). Con 0 sobres el producto es solo referencia. El PVP
+        puede ir en euros (15,99) o en otra moneda (68 CNY, 7200 JPY, 70000 KRW,
+        1980 TWD, 750 HKD) y se convierte con los tipos de cambio. Si una carta
+        vale distinto según el idioma, escribe su valor así: ES=30 EN=32 JP=45.
+        El idioma se deduce del nombre (JP, KR, CN) o se fija en la sexta
+        columna (ES, EN, JP, KO, ZH). La séptima es la fecha de salida
+        (AAAA-MM-DD) y la octava, el enlace de una foto. Las líneas con # se
+        ignoran. Los valores de extras son estimaciones: ajústalos a tu
+        criterio.
+      </p>
+      <textarea id="csv" spellcheck="false"></textarea>
+      <div class="btns">
+        <button id="apply">Aplicar</button><button id="cp">Copiar</button
+        ><button id="rs">Restaurar</button>
+      </div>
+    </details>
 
-<details id="datos"><summary>Datos: exportar e importar</summary>
-<div class="notice big"><span class="ni">⚠️</span><div><b>Atención: tus datos solo existen en este navegador.</b><br>Hallazgos, ediciones, fotos, marcas 📦 y ajustes no se envían a ningún servidor. Para llevarlos a otro dispositivo o conservarlos, <b>exporta</b> y guarda el archivo. «Exportar» baja esta expansión y «Exportar todo» todas las que tengan datos. Al importar, los hallazgos se fusionan y lo demás se reemplaza; si el archivo trae una expansión nueva, se crea.</div></div>
-<label class="hint"><input type="checkbox" id="wi" style="width:auto;margin:0 6px 0 0">Incluir fotos subidas (pesa más)</label><textarea id="dt" spellcheck="false" style="height:120px" placeholder="Aquí aparece el texto exportado. Para importar, pega aquí el texto o carga un archivo."></textarea><div class="btns"><button id="ex">Exportar</button><button id="exa">Exportar todo</button><button id="ec">Copiar</button><button id="im">Importar</button><button id="rx" class="rm">Restablecer expansión</button></div><input id="fi" type="file" accept=".json,application/json,text/plain" style="margin-top:8px"><p class="hint" id="st"></p></details>
-<details><summary>Catálogo de la expansión</summary>
-<p class="hint">Una línea por producto: nombre;sobres;PVP;extras;origen;idioma;fecha;foto. Los extras van como descripción:valor€ separados por | y el origen es texto libre (precio oficial local). Con 0 sobres el producto es solo referencia. El PVP puede ir en euros (15,99) o en otra moneda (68 CNY, 7200 JPY, 70000 KRW, 1980 TWD, 750 HKD) y se convierte con los tipos de cambio. Si una carta vale distinto según el idioma, escribe su valor así: ES=30 EN=32 JP=45. El idioma se deduce del nombre (JP, KR, CN) o se fija en la sexta columna (ES, EN, JP, KO, ZH). La séptima es la fecha de salida (AAAA-MM-DD) y la octava, el enlace de una foto. Las líneas con # se ignoran. Los valores de extras son estimaciones: ajústalos a tu criterio.</p>
-<textarea id="csv" spellcheck="false"></textarea>
-<div class="btns"><button id="apply">Aplicar</button><button id="cp">Copiar</button><button id="rs">Restaurar</button></div></details>
+    <div class="notice" id="nt2">
+      <span class="ni">⚠️</span>
+      <div>
+        Recuerda: tus datos viven solo en este navegador.
+        <a href="#datos" id="gd">Ir a exportar</a>
+      </div>
+    </div>
+    <footer>
+      BoosterMath · los precios y valores son orientativos y los introduces tú
+    </footer>
 
-<div class="notice" id="nt2"><span class="ni">⚠️</span><div>Recuerda: tus datos viven solo en este navegador. <a href="#datos" id="gd">Ir a exportar</a></div></div>
-<footer>BoosterMath · los precios y valores son orientativos y los introduces tú</footer>
+    <dialog id="xpd" aria-label="Elegir expansión">
+      <div class="dh">
+        <b>Elegir expansión</b
+        ><button type="button" id="xpx" class="x" aria-label="Cerrar">✕</button>
+      </div>
+      <input
+        id="xps"
+        type="search"
+        placeholder="Buscar expansión o serie…"
+        autocomplete="off"
+      />
+      <div id="xpl"></div>
+      <div class="dn">
+        <b>＋ Nueva expansión</b>
+        <div class="drow">
+          <input id="nxn" placeholder="Nombre de la nueva expansión" /><button
+            type="button"
+            id="nxc"
+          >
+            Crear
+          </button>
+        </div>
+      </div>
+    </dialog>
 
-<dialog id="xpd" aria-label="Elegir expansión"><div class="dh"><b>Elegir expansión</b><button type="button" id="xpx" class="x" aria-label="Cerrar">✕</button></div>
-<input id="xps" type="search" placeholder="Buscar expansión o serie…" autocomplete="off">
-<div id="xpl"></div>
-<div class="dn"><b>＋ Nueva expansión</b><div class="drow"><input id="nxn" placeholder="Nombre de la nueva expansión"><button type="button" id="nxc">Crear</button></div></div></dialog>
-
-<dialog id="ck" aria-label="Aviso de almacenamiento"><div class="dh"><b>🍪 Almacenamiento y cookies</b></div>
-<p>BoosterMath guarda tus datos y preferencias en el <b>almacenamiento local de tu navegador</b> para que no los pierdas al cerrar la página. No usa cookies de seguimiento ni de publicidad y no envía tus datos a ningún servidor.</p>
-<details><summary>Más información</summary><p class="hint">Se guardan tus hallazgos, ediciones, enlaces de fotos, marcas «sin abrir», umbrales, tipos de cambio y si has cerrado la ayuda o este aviso. Puedes borrarlos desde los ajustes del navegador (datos del sitio) o con «Restablecer expansión». Si activas la instalación de la web, el navegador guarda también una copia para funcionar sin conexión.</p></details>
-<div class="btns"><button type="button" id="cka" class="pri">Aceptar</button></div></dialog>
-<script src="app.js"></script></body></html>
+    <dialog id="ck" aria-label="Aviso de almacenamiento">
+      <div class="dh"><b>🍪 Almacenamiento y cookies</b></div>
+      <p>
+        BoosterMath guarda tus datos y preferencias en el
+        <b>almacenamiento local de tu navegador</b> para que no los pierdas al
+        cerrar la página. No usa cookies de seguimiento ni de publicidad y no
+        envía tus datos a ningún servidor.
+      </p>
+      <details>
+        <summary>Más información</summary>
+        <p class="hint">
+          Se guardan tus hallazgos, ediciones, enlaces de fotos, marcas «sin
+          abrir», umbrales, tipos de cambio y si has cerrado la ayuda o este
+          aviso. Puedes borrarlos desde los ajustes del navegador (datos del
+          sitio) o con «Restablecer expansión». Si activas la instalación de la
+          web, el navegador guarda también una copia para funcionar sin
+          conexión.
+        </p>
+      </details>
+      <div class="btns">
+        <button type="button" id="cka" class="pri">Aceptar</button>
+      </div>
+    </dialog>
+    <script src="app.js"></script>
+  </body>
+</html>
