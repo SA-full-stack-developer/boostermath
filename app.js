@@ -303,8 +303,11 @@ function finds(x, c) {
     sp.textContent = `${f(z.p)} € · ${m.t}`;
     const dl = document.createElement("button");
     dl.className = "x";
-    dl.textContent = "×";
+    dl.textContent = "\uD83D\uDDD1\uFE0F";
+    dl.title = "Eliminar hallazgo";
+    dl.setAttribute("aria-label", "Eliminar hallazgo");
     dl.onclick = () => {
+      if (!confirm(`¿Eliminar el hallazgo de «${z.s}» (${f(z.p)} €)?`)) return;
       S.finds.splice(S.finds.indexOf(z), 1);
       save();
       render();
@@ -329,6 +332,7 @@ function finds(x, c) {
     ed.onclick = () => {
       li.textContent = "";
       li.style.flexWrap = "wrap";
+      li.style.flexDirection = "row";
       li.style.opacity = "1";
       const f1 = document.createElement("input"),
         f2 = document.createElement("input"),
@@ -383,11 +387,14 @@ function finds(x, c) {
     }
     if (z.t)
       sp.title = "Actualizado " + new Date(z.t).toLocaleDateString("es-ES");
-    const info = document.createElement("div");
-    info.className = "fi";
-    info.append(nm, sp);
-    if (tr.textContent) info.append(tr);
-    li.append(av, info, ed, dl);
+    const ic = document.createElement("div");
+    ic.className = "fic";
+    ic.append(av, ed, dl);
+    const fp = document.createElement("div");
+    fp.className = "fpr";
+    fp.append(sp);
+    if (tr.textContent) fp.append(tr);
+    li.append(ic, nm, fp);
     u.appendChild(li);
   });
 }
