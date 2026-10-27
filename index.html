@@ -29,7 +29,35 @@
           "
         />
       </h1>
-      <button type="button" id="ins" class="ins" hidden>⬇ Instalar</button>
+      <div class="hbar">
+        <button
+          type="button"
+          id="calb"
+          class="ins"
+          title="Calendario"
+          aria-label="Calendario"
+        >
+          📅
+        </button>
+        <button type="button" id="ins" class="ins" hidden>⬇ Instalar</button>
+      </div>
+      <details class="news" id="news">
+        <summary>📰 Webs de noticias</summary>
+        <div id="nwl"></div>
+        <button type="button" id="nwr" class="clr" hidden>
+          Restaurar ocultas
+        </button>
+        <div class="calf">
+          <input id="nwn" placeholder="Nombre" aria-label="Nombre de la web" />
+          <input
+            id="nwu"
+            type="url"
+            placeholder="https://…"
+            aria-label="Enlace"
+          />
+          <button type="button" id="nwa">Añadir</button>
+        </div>
+      </details>
     </header>
 
     <details class="card help" id="help" open>
@@ -87,7 +115,7 @@
     <div class="ld" id="ld" hidden></div>
     <div class="warn" id="warn" hidden></div>
     <div id="hd"></div>
-    <div class="flex">
+    <div class="flex" id="cfgbox">
       <div class="w100">
         <div class="cfg">
           <label
@@ -122,7 +150,7 @@
       <p class="hint" id="fxn"></p>
     </details>
 
-    <details class="card">
+    <details class="card" id="addbox">
       <summary><b>＋ Añadir hallazgo</b></summary>
       <select id="fs"></select>
       <div id="np" hidden>
@@ -153,9 +181,17 @@
         id="fa"
         style="width: 100%"
       >
-        &#9989; Disponible</button
-      ><button id="fb">Añadir</button>
+        &#9989; Disponible
+      </button>
+      <div class="btns">
+        <button id="fb">Añadir</button
+        ><button type="button" id="fclr">🧹 Limpiar</button>
+      </div>
     </details>
+    <section id="favs" hidden>
+      <h2>⭐ Favoritos</h2>
+      <div id="fav" class="cards"></div>
+    </section>
     <div class="flex">
       <input
         id="q"
@@ -166,6 +202,7 @@
       />
       <div class="srt flex40">
         <select id="so" aria-label="Ordenar">
+          <option value="pbest">Mejor €/sobre según PVP</option>
           <option value="cat">Orden del catálogo</option>
           <option value="best">Mejor €/sobre primero</option>
           <option value="worst">Peor €/sobre primero</option>
@@ -178,6 +215,17 @@
           <option value="ddesc">Salida: más recientes primero</option></select
         ><span class="hint" id="cnt"></span>
       </div>
+      <div class="qbar w100">
+        <button type="button" id="qr" class="clr">✕ Limpiar búsqueda</button>
+        <button
+          type="button"
+          id="allx"
+          class="nx"
+          title="Aplica a todos los productos de la expansión"
+        >
+          ✅ Extras contados (todos)
+        </button>
+      </div>
     </div>
 
     <details class="flt" id="flt">
@@ -187,7 +235,7 @@
     <input id="ph" type="file" accept="image/*" hidden /><datalist
       id="pl"
     ></datalist>
-    <div id="list"></div>
+    <div id="list" class="cards"></div>
 
     <details id="datos">
       <summary>Datos: exportar e importar</summary>
@@ -284,7 +332,46 @@
             Crear
           </button>
         </div>
+        <div class="drow">
+          <input
+            id="nxi"
+            type="url"
+            placeholder="Enlace de imagen (opcional)"
+          /><button type="button" id="nxb">Subir imagen</button>
+        </div>
+        <input id="nxf" type="file" accept="image/*" hidden />
+        <p class="hint" id="nxh"></p>
       </div>
+    </dialog>
+
+    <dialog id="cald" aria-label="Calendario">
+      <div class="dh">
+        <b>📅 Calendario</b
+        ><button type="button" id="calx" class="x" aria-label="Cerrar">
+          ✕
+        </button>
+      </div>
+      <div class="cnav">
+        <button type="button" id="calp" aria-label="Mes anterior">◀</button>
+        <b id="calm"></b>
+        <button type="button" id="calh">Hoy</button>
+        <button type="button" id="caln" aria-label="Mes siguiente">▶</button>
+      </div>
+      <div class="calg" id="calg"></div>
+      <div id="cal"></div>
+      <div class="calf">
+        <input id="cad" type="date" aria-label="Fecha" />
+        <input id="cat" placeholder="Título de la entrada" />
+        <input id="cac" type="color" value="#2563eb" aria-label="Color" />
+        <button type="button" id="caa">Añadir</button>
+      </div>
+      <button type="button" id="calr" class="clr" hidden>
+        Restaurar entradas ocultas
+      </button>
+      <p class="hint">
+        Lo que añadas se guarda solo en este navegador. Las entradas de
+        data/calendario.json se pueden ocultar aquí sin tocar el hosting.
+      </p>
     </dialog>
 
     <dialog id="ck" aria-label="Aviso de almacenamiento">

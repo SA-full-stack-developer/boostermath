@@ -4,6 +4,6 @@
     "name": "Pokémon",
     "icon": "⚡",
     "img": "assets/juegos/pokemon.webp",
-    "expansions": ["dominio-delta.json", "30-aniversario.json"]
+    "expansions": ["30-aniversario.json", "dominio-delta.json"]
   }
 ]

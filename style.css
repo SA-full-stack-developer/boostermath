@@ -452,9 +452,6 @@ h1.logo img {
   position: relative;
 }
 .ins {
-  position: absolute;
-  right: 0;
-  top: 4px;
   margin: 0;
   font-size: 12px;
   padding: 4px 10px;
@@ -690,13 +687,13 @@ dialog::backdrop {
   padding: 3px 10px;
 }
 /* fichas compactas en rejilla */
-#list {
+.cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1rem;
   align-items: start;
 }
-#list .card {
+.cards .card {
   margin: 0;
   padding: 1rem 1.5rem;
   border-left-width: 5px;
@@ -722,32 +719,32 @@ dialog::backdrop {
   height: 100px;
   font-size: 16px;
 }
-#list .lim {
+.cards .lim {
   font-size: 12px;
   margin: 5px 0 4px;
 }
-#list .row {
+.cards .row {
   gap: 6px;
 }
-#list .row input {
+.cards .row input {
   font-size: 16px;
   padding: 5px 8px;
   margin: 0;
 }
-#list .res {
+.cards .res {
   min-height: 32px;
   padding: 3px 4px;
   font-size: 12px;
   flex: 1.5;
 }
-#list .brk {
+.cards .brk {
   font-size: 10px;
   margin-top: 4px;
 }
-#list details {
+.cards details {
   margin: 3px 0;
 }
-#list summary {
+.cards summary {
   font-size: 13px;
 }
 .phr {
@@ -837,7 +834,7 @@ footer {
   body {
     padding: 1.5rem;
   }
-  #list {
+  .cards {
     grid-template-columns: 1fr;
   }
   .cfg {
@@ -957,35 +954,236 @@ footer {
   border-color: var(--ok);
   box-shadow: 0 0 0 2px var(--ok);
 }
-#list .top {
+.cards .top {
   flex-wrap: wrap;
   align-items: stretch;
   justify-content: flex-start;
 }
-#list .top .side {
+.cards .top .side {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-#list .top .ic {
+.cards .top .ic {
   display: flex;
   justify-content: flex-end;
   gap: 6px;
 }
-#list .top .ic .x {
+.cards .top .ic .x {
   margin: 0;
   padding: 4px 8px;
   font-size: 16px;
 }
-#list .top .nx {
+.cards .top .nx {
   flex: 1;
   width: 100%;
   margin: 0;
   font-size: 13px;
   line-height: 1.2;
 }
-#list .top .tt {
+.cards .top .tt {
   flex: 1 1 100%;
+}
+
+/* ===== v4: reset, favoritos, observaciones, noticias, calendario ===== */
+.hbar {
+  position: absolute;
+  right: 0;
+  top: 4px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.hbar .ins {
+  position: static;
+}
+.news {
+  position: absolute;
+  right: 0;
+  top: 44px;
+  z-index: 5;
+  margin: 0;
+  width: min(300px, 92vw);
+}
+.news summary {
+  text-align: right;
+  font-size: 12px;
+}
+.news[open] {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+.nwr,
+.cer {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+  padding: 4px 0;
+  border-top: 1px solid var(--bd);
+}
+.nwr a,
+.cer b {
+  flex: 1;
+  color: var(--tx);
+  overflow-wrap: anywhere;
+}
+.nwr .x,
+.cer .x {
+  margin: 0;
+}
+.calf {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.calf input {
+  flex: 1 1 120px;
+  width: auto;
+  margin: 0;
+}
+.calf input[type="color"] {
+  flex: 0 0 44px;
+  padding: 2px;
+}
+.calf button {
+  margin: 0;
+}
+.cnav {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.cnav b {
+  flex: 1;
+  text-align: center;
+  text-transform: capitalize;
+}
+.cnav button {
+  margin: 0;
+}
+.calg {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin: 8px 0;
+}
+.calg .ch {
+  font-size: 11px;
+  color: var(--mu);
+  text-align: center;
+}
+.cd {
+  min-height: 44px;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-content: flex-start;
+}
+.cd span {
+  width: 100%;
+}
+.cd i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.cd.hoy {
+  border-color: var(--ok);
+  font-weight: 700;
+}
+.cd.sel {
+  background: var(--okb);
+}
+.cdot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+.qbar {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.qbar button {
+  margin: 0;
+}
+#favs {
+  border-top: 2px solid var(--bd);
+  border-bottom: 2px solid var(--bd);
+  padding: 1rem 0;
+  margin: 1rem 0;
+}
+#favs[hidden] {
+  display: none;
+}
+#favs h2 {
+  font-size: 16px;
+  margin: 0 0 1rem;
+}
+.star {
+  margin-left: 6px;
+  opacity: 0.35;
+  aspect-ratio: 1 / 1;
+}
+.star.on {
+  opacity: 1;
+  border-color: var(--wa);
+}
+.obt {
+  height: auto;
+  min-height: 70px;
+  font:
+    13px/1.35 system-ui,
+    sans-serif;
+  resize: vertical;
+}
+.ob.has summary::after {
+  content: " ●";
+  color: var(--wa);
+}
+
+/* ===== wishlist ===== */
+.top {
+  position: relative;
+}
+.heart {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  margin: 0;
+  padding: 2px 5px;
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 999px;
+  background: var(--card);
+}
+.heart.on {
+  border-color: var(--ko);
+}
+body.wm #help,
+body.wm .notice,
+body.wm #xpb,
+body.wm #hd,
+body.wm #cfgbox,
+body.wm #conversor,
+body.wm #addbox,
+body.wm #datos,
+body.wm #catalogo,
+body.wm footer,
+body.wm #favs,
+body.wm #allx {
+  display: none !important;
 }

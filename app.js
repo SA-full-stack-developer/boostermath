@@ -73,11 +73,24 @@ const freshState = (d) => ({
   noex: Object.assign({}, d.noex),
   dates: Object.assign({}, d.dates),
   sealed: {},
+  wish: {},
+  fav: {},
+  obs: {},
   fx: Object.assign({}, FX0, d.fx),
 });
 function loadState(d) {
   const s = Object.assign(freshState(d), LS.get("s." + d.id) || {});
-  ["imgs", "imgUrl", "noex", "dates", "sealed", "fx"].forEach((k) => {
+  [
+    "imgs",
+    "imgUrl",
+    "noex",
+    "dates",
+    "sealed",
+    "fx",
+    "fav",
+    "obs",
+    "wish",
+  ].forEach((k) => {
     if (!s[k] || typeof s[k] !== "object") s[k] = {};
   });
   s.fx = Object.assign({}, FX0, d.fx, s.fx);
@@ -154,6 +167,12 @@ const STORES = [
   "Pokemon Center",
 ];
 const $ = (id) => document.getElementById(id);
+const FMORE = new Set(),
+  SHMORE = new Set(),
+  SH_N = 12,
+  F_N = 10;
+const cardsOf = (n) =>
+  [...document.querySelectorAll(".card")].filter((c) => c.dataset.n === n);
 const num = (v) => {
   const n = parseFloat(String(v).replace(",", "."));
   return isFinite(n) ? n : null;
@@ -286,7 +305,9 @@ function finds(x, c) {
     u = d.querySelector("ul");
   d.querySelector("summary").textContent = `Hallazgos (${L.length})`;
   u.innerHTML = "";
-  L.forEach((z) => {
+  const all = FMORE.has(x.n),
+    shown = all ? L : L.slice(0, F_N);
+  shown.forEach((z) => {
     const li = document.createElement("li"),
       m = meas(x, z.p),
       v = m.v;
@@ -322,7 +343,7 @@ function finds(x, c) {
     av.onclick = () => {
       z.a = z.a === false;
       save();
-      finds(x, c);
+      render();
     };
     if (z.a === false) li.style.opacity = ".55";
     const ed = document.createElement("button");
@@ -371,9 +392,7 @@ function finds(x, c) {
         z.l = f4.value;
         z.t = Date.now();
         save();
-        fillShops();
-        document.querySelectorAll("#list .card").forEach(chipsFor);
-        finds(x, c);
+        render();
       };
       no.onclick = () => finds(x, c);
       li.append(f1, f4, f2, f3, ok, no);
@@ -397,6 +416,19 @@ function finds(x, c) {
     li.append(ic, nm, fp);
     u.appendChild(li);
   });
+  if (L.length > F_N) {
+    const li = document.createElement("li"),
+      b = document.createElement("button");
+    b.type = "button";
+    b.className = "clr";
+    b.textContent = all ? "▲ Ver menos" : "▼ Ver todos (" + L.length + ")";
+    b.onclick = () => {
+      all ? FMORE.delete(x.n) : FMORE.add(x.n);
+      cardsOf(x.n).forEach((cc) => finds(x, cc));
+    };
+    li.appendChild(b);
+    u.appendChild(li);
+  }
 }
 const KS_TAGS = [
   ["Moneda", /moneda|coin/i],
@@ -421,8 +453,58 @@ const tagsOf = (x) => {
   });
   return o;
 };
-const FL = { so: "cat", k: new Set(), t: new Set(), f: new Set() };
+let WM = false;
+const ST = new Map();
+function useExp(d) {
+  if (!ST.has(d.id)) ST.set(d.id, loadState(d));
+  cur = d;
+  S = ST.get(d.id);
+  EXP_Q = d.q || d.name;
+}
+const use = (x) => {
+  if (x._d) useExp(x._d);
+  return x;
+};
+function wishItems() {
+  const out = [];
+  EXPS.forEach((d) => {
+    useExp(d);
+    parse().forEach((x) => {
+      if (S.wish[x.n]) {
+        x._d = d;
+        out.push(x);
+      }
+    });
+  });
+  return out;
+}
+function enterWish() {
+  if (!cur) useExp(EXPS[0]);
+  WM = true;
+  document.body.classList.add("wm");
+  ST.clear();
+  FL.so = "pbest";
+  FL.k.clear();
+  FL.t.clear();
+  FL.f.clear();
+  FL.l.clear();
+  $("q").value = "";
+  buildGames();
+  render();
+}
+function exitWish() {
+  WM = false;
+  document.body.classList.remove("wm");
+}
+const FL = {
+  so: "pbest",
+  k: new Set(),
+  t: new Set(),
+  f: new Set(),
+  l: new Set(),
+};
 function effBest(x) {
+  use(x);
   if (!(x.k > 0)) return null;
   const L = S.finds.filter((z) => z.n === x.n),
     av = L.filter((z) => z.a !== false),
@@ -431,6 +513,10 @@ function effBest(x) {
   if (p === null || p === undefined) return null;
   return (p - x.xt) / x.k;
 }
+const effPvp = (x) =>
+  x.k > 0 && x.pvp !== null && x.pvp !== undefined
+    ? (x.pvp - x.xt) / x.k
+    : null;
 const dv = (x) => (/^\d{4}-\d{2}-\d{2}$/.test(x.fe) ? Date.parse(x.fe) : null);
 const U = (v) => v === null || v === undefined || isNaN(v);
 const by = (f, d) => (a, b) => {
@@ -443,6 +529,7 @@ const by = (f, d) => (a, b) => {
 };
 const SORTS = {
   best: by(effBest, 1),
+  pbest: by(effPvp, 1),
   worst: by(effBest, -1),
   kasc: by((x) => x.k, 1),
   kdesc: by((x) => x.k, -1),
@@ -455,17 +542,23 @@ const SORTS = {
 function applyFilters(P, q) {
   let A = P.filter((x) => x.n.toLowerCase().includes(q));
   if (FL.k.size) A = A.filter((x) => FL.k.has(String(x.k > 0 ? x.k : 0)));
+  if (FL.l.size) A = A.filter((x) => FL.l.has(x.lg));
   if (FL.t.size)
     A = A.filter((x) => {
       const t = tagsOf(x);
       return [...FL.t].every((n) => t.has(n));
     });
-  if (FL.f.has("hall")) A = A.filter((x) => S.finds.some((z) => z.n === x.n));
+  if (FL.f.has("wish")) A = A.filter((x) => use(x) && S.wish[x.n]);
+  if (FL.f.has("hall"))
+    A = A.filter((x) => use(x) && S.finds.some((z) => z.n === x.n));
   if (FL.f.has("disp"))
-    A = A.filter((x) => S.finds.some((z) => z.n === x.n && z.a !== false));
-  if (FL.f.has("sealed")) A = A.filter((x) => S.sealed[x.n]);
+    A = A.filter(
+      (x) => use(x) && S.finds.some((z) => z.n === x.n && z.a !== false),
+    );
+  if (FL.f.has("sealed")) A = A.filter((x) => use(x) && S.sealed[x.n]);
   if (FL.f.has("ok"))
     A = A.filter((x) => {
+      use(x);
       const e = effBest(x);
       return e !== null && e <= (S.ok + S.mx) / 2;
     });
@@ -506,6 +599,20 @@ function buildFilters(P) {
     })),
     FL.k,
   );
+  const LG = {
+    ES: "Español",
+    EN: "Inglés",
+    JP: "Japonés",
+    KO: "Coreano",
+    ZH: "Chino",
+  };
+  grp(
+    "Idioma",
+    Object.keys(LG)
+      .filter((k) => P.some((x) => x.lg === k))
+      .map((k) => ({ v: k, l: LG[k] })),
+    FL.l,
+  );
   grp(
     "Extras",
     KS_TAGS.map((t) => t[0])
@@ -516,6 +623,7 @@ function buildFilters(P) {
   grp(
     "Estado",
     [
+      { v: "wish", l: "\uD83D\uDC96 Deseados" },
       { v: "hall", l: "Con hallazgos" },
       { v: "disp", l: "Disponible" },
       { v: "sealed", l: "\uD83D\uDCE6 Lo tengo" },
@@ -523,7 +631,7 @@ function buildFilters(P) {
     ],
     FL.f,
   );
-  const n = FL.k.size + FL.t.size + FL.f.size;
+  const n = FL.k.size + FL.t.size + FL.f.size + FL.l.size;
   $("fsum").textContent = "Filtros" + (n ? " (" + n + ")" : "");
   if (n) {
     const b = document.createElement("button");
@@ -534,29 +642,35 @@ function buildFilters(P) {
       FL.k.clear();
       FL.t.clear();
       FL.f.clear();
+      FL.l.clear();
       render();
     };
     fc.appendChild(b);
   }
 }
 function render() {
-  if (!cur) return;
+  if (!cur && !WM) return;
   hdr();
   fillShops();
   const keep = {},
     opened = {},
     sy = window.scrollY;
-  document.querySelectorAll("#list .card").forEach((c) => {
+  document.querySelectorAll("#fav .card, #list .card").forEach((c) => {
     const i = c.querySelector(".pp");
     if (i) keep[c.dataset.n] = i.value;
-    opened[c.dataset.n] = [".fd", ".sh", ".mo"].filter((s) => {
+    opened[c.parentNode.id + "|" + c.dataset.n] = [
+      ".fd",
+      ".sh",
+      ".mo",
+      ".ob",
+    ].filter((s) => {
       const d = c.querySelector(s);
       return d && d.open;
     });
   });
   const q = $("q").value.toLowerCase(),
     L = $("list"),
-    P = parse(),
+    P = WM ? wishItems() : parse(),
     sel = $("fs").value;
   L.innerHTML = "";
   $("pl").innerHTML = "";
@@ -581,6 +695,14 @@ function render() {
   $("np").hidden = $("fs").value !== "__new__";
   buildFilters(P);
   $("so").value = FL.so;
+  {
+    const allOff = P.length > 0 && P.every((x) => S.noex[x.n]),
+      b = $("allx");
+    b.textContent = allOff
+      ? "\uD83D\uDEAB Extras no contados (todos)"
+      : "\u2705 Extras contados (todos)";
+    b.className = "nx" + (allOff ? " on" : "");
+  }
   const A = applyFilters(P, q);
   $("cnt").textContent =
     A.length === P.length
@@ -589,18 +711,51 @@ function render() {
   if (!A.length) {
     const e = document.createElement("p");
     e.className = "hint empty";
-    e.textContent = P.length
-      ? "Ning\u00fan producto coincide con la b\u00fasqueda o los filtros."
-      : "Esta expansi\u00f3n no tiene productos todav\u00eda. A\u00f1\u00e1delos en el cat\u00e1logo o con \u00abA\u00f1adir hallazgo\u00bb.";
+    e.textContent =
+      WM && !P.length
+        ? "Todavía no tienes productos deseados: marca el ❤️ en cualquier producto."
+        : P.length
+          ? "Ning\u00fan producto coincide con la b\u00fasqueda o los filtros."
+          : "Esta expansi\u00f3n no tiene productos todav\u00eda. A\u00f1\u00e1delos en el cat\u00e1logo o con \u00abA\u00f1adir hallazgo\u00bb.";
     L.appendChild(e);
   }
-  A.forEach((x) => {
+  const FAV = WM ? [] : P.filter((x) => S.fav[x.n]),
+    FV = $("fav");
+  if (SORTS[FL.so]) FAV.sort(SORTS[FL.so]);
+  FV.innerHTML = "";
+  $("favs").hidden = !FAV.length;
+  const build = (x, L) => {
+    if (x._d) useExp(x._d);
     const c = document.createElement("div");
+    if (x._d)
+      ["click", "input", "change"].forEach((ev) =>
+        c.addEventListener(ev, () => useExp(x._d), true),
+      );
     c.className = "card";
     c.dataset.n = x.n;
-    c.innerHTML = `<div class="top"><button class="th" type="button" aria-label="Foto"></button><div class="side"><div class="ic"><button class="x av own" type="button"></button><button class="x rm" type="button" title="Eliminar producto" aria-label="Eliminar producto">\uD83D\uDDD1\uFE0F</button></div><button class="nx" type="button"></button></div><div class="tt"><b class="nm"></b><span class="mt"></span></div></div><div class="lim"></div><div class="row"><input class="pp" inputmode="decimal" placeholder="Precio \u20ac en tienda" aria-label="Precio en tienda"><div class="res">\u2014</div></div><div class="brk"></div><details class="fd"><summary></summary><ul></ul></details><details class="sh"><summary>Buscar en tiendas</summary><div class="shl"></div></details><details class="mo"><summary>Detalles</summary><div class="desc"></div><div class="desc org"></div><div class="phr"><input class="pu" type="url" placeholder="URL de la foto (https://\u2026)" aria-label="URL de la foto"><button type="button" class="pg">Guardar</button><button type="button" class="pf">Subir</button></div></details>`;
+    c.innerHTML = `
+<div class="top">
+  <button class="th" type="button" aria-label="Foto"></button>
+  <button class="heart" type="button">🤍</button>
+  <div class="side">
+    <div class="ic">
+      <button class="x av star" type="button">⭐</button>
+      <button class="x av own" type="button"></button>
+      <button class="x rm" type="button" title="Eliminar producto" aria-label="Eliminar producto">🗑️</button>
+    </div>
+    <button class="nx" type="button"></button>
+  </div>
+  <div class="tt"><b class="nm"></b><span class="mt"></span></div>
+</div>
+<div class="lim"></div>
+<div class="row"><input class="pp" inputmode="decimal" placeholder="Precio € en tienda" aria-label="Precio en tienda"><div class="res">—</div></div>
+<div class="brk"></div>
+<details class="fd"><summary></summary><ul></ul></details>
+<details class="sh"><summary>Buscar en tiendas</summary><div class="shl"></div></details>
+<details class="mo"><summary>Detalles</summary><div class="desc"></div><div class="desc org"></div><div class="phr"><input class="pu" type="url" placeholder="URL de la foto (https://…)" aria-label="URL de la foto"><button type="button" class="pg">Guardar</button><button type="button" class="pf">Subir</button></div></details>
+<details class="ob"><summary>Observaciones</summary><textarea class="obt" rows="3" placeholder="Notas sobre este producto…" aria-label="Observaciones"></textarea></details>`;
     c.querySelector(".nm").textContent = x.n;
-    (opened[x.n] || []).forEach((s) => {
+    (opened[L.id + "|" + x.n] || []).forEach((s) => {
       const d = c.querySelector(s);
       if (d) d.open = true;
     });
@@ -611,6 +766,7 @@ function render() {
             ? S.dates[x.n]
             : x.fe;
         mt.textContent = [
+          x._d ? x._d.name : "",
           x.k > 0 ? x.k + (x.k === 1 ? " sobre" : " sobres") : "sin sobres",
           x.lg,
           /^\d{4}-\d{2}-\d{2}$/.test(fe) ? fmtDate(fe) : "",
@@ -640,8 +796,48 @@ function render() {
       if (S.sealed[x.n]) delete S.sealed[x.n];
       else S.sealed[x.n] = true;
       save();
-      owp();
+      render();
     };
+    const st = c.querySelector(".star");
+    {
+      const on = !!S.fav[x.n];
+      st.classList.toggle("on", on);
+      st.title = on ? "Favorito: pulsa para quitarlo" : "Marcar como favorito";
+      st.setAttribute("aria-pressed", on ? "true" : "false");
+    }
+    st.onclick = () => {
+      if (S.fav[x.n]) delete S.fav[x.n];
+      else S.fav[x.n] = true;
+      save();
+      render();
+    };
+    const hr = c.querySelector(".heart");
+    {
+      const on = !!S.wish[x.n];
+      hr.textContent = on ? "❤️" : "🤍";
+      hr.classList.toggle("on", on);
+      hr.title = on ? "Deseado: pulsa para quitarlo" : "Añadir a la wishlist";
+      hr.setAttribute("aria-pressed", on ? "true" : "false");
+    }
+    hr.onclick = () => {
+      if (S.wish[x.n]) delete S.wish[x.n];
+      else S.wish[x.n] = true;
+      save();
+      render();
+    };
+    const ot = c.querySelector(".obt");
+    ot.value = S.obs[x.n] || "";
+    c.querySelector(".ob").classList.toggle("has", !!ot.value.trim());
+    ot.addEventListener("input", () => {
+      const v = ot.value;
+      if (v.trim()) S.obs[x.n] = v;
+      else delete S.obs[x.n];
+      save();
+      cardsOf(x.n).forEach((o) => {
+        if (o !== c) o.querySelector(".obt").value = v;
+        o.querySelector(".ob").classList.toggle("has", !!v.trim());
+      });
+    });
     const th = c.querySelector(".th"),
       pu = c.querySelector(".pu"),
       slug = (t) =>
@@ -734,6 +930,9 @@ function render() {
       delete S.imgUrl[x.n];
       delete S.noex[x.n];
       delete S.sealed[x.n];
+      delete S.fav[x.n];
+      delete S.wish[x.n];
+      delete S.obs[x.n];
       save();
       $("csv").value = S.csv;
       render();
@@ -748,13 +947,22 @@ function render() {
       : "Solo sobres";
     c.querySelector(".org").textContent = x.or ? "Origen: " + x.or : "";
     const i = c.querySelector(".pp");
-    i.addEventListener("input", () => paint(x, c));
+    i.addEventListener("input", () => {
+      paint(x, c);
+      cardsOf(x.n).forEach((o) => {
+        if (o === c) return;
+        o.querySelector(".pp").value = i.value;
+        paint(x, o);
+      });
+    });
     if (keep[x.n]) i.value = keep[x.n];
     L.appendChild(c);
     paint(x, c);
     finds(x, c);
     if (q && x.n.toLowerCase() === q) c.querySelector(".fd").open = true;
-  });
+  };
+  A.forEach((x) => build(x, L));
+  FAV.forEach((x) => build(x, FV));
   window.scrollTo(0, sy);
 }
 let phT = null;
@@ -805,9 +1013,11 @@ function fillShops() {
   });
 }
 function chipsFor(c) {
-  const shl = c.querySelector(".shl");
+  const shl = c.querySelector(".shl"),
+    all = shops(),
+    open = SHMORE.has(c.dataset.n);
   shl.innerHTML = "";
-  shops().forEach((st) => {
+  (open ? all : all.slice(0, SH_N)).forEach((st) => {
     const a = document.createElement("a");
     a.textContent = st;
     a.target = "_blank";
@@ -817,6 +1027,18 @@ function chipsFor(c) {
       encodeURIComponent(EXP_Q + " " + c.dataset.n + " " + st);
     shl.appendChild(a);
   });
+  if (all.length > SH_N) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.textContent = open ? "▲ Menos" : "▼ " + (all.length - SH_N) + " más";
+    b.title = open ? "Ver menos tiendas" : "Ver todas las tiendas";
+    b.onclick = () => {
+      open ? SHMORE.delete(c.dataset.n) : SHMORE.add(c.dataset.n);
+      cardsOf(c.dataset.n).forEach(chipsFor);
+    };
+    shl.appendChild(b);
+  }
 }
 function free() {
   const k = num($("fk").value),
@@ -872,11 +1094,7 @@ $("fb").onclick = () => {
     if ($("nd").value) {
       S.dates[nm] = $("nd").value;
     }
-    $("nd").value = "";
     n = nm;
-    $("nn").value = "";
-    $("nk").value = "";
-    $("ne").value = "";
   }
   let u = "";
   try {
@@ -885,15 +1103,18 @@ $("fb").onclick = () => {
   } catch (e) {}
   S.finds.push({ n, s, p, u, a: fa, l: $("fl").value, t: Date.now() });
   save();
-  fa = true;
-  $("fa").innerHTML = "&#9989; Disponible";
-  $("ft").value = "";
-  $("fpr").value = "";
-  $("fu").value = "";
   $("q").value = n;
   render();
   $("fs").value = n;
   $("np").hidden = true;
+};
+$("fclr").onclick = () => {
+  ["nn", "nk", "ne", "nd", "ft", "fpr", "fu"].forEach(
+    (id) => ($(id).value = ""),
+  );
+  $("fl").selectedIndex = 0;
+  fa = true;
+  $("fa").innerHTML = "&#9989; Disponible";
 };
 function buildFx() {
   $("fx").innerHTML = "";
@@ -934,6 +1155,21 @@ $("mx").oninput = () => {
   }
 };
 $("q").oninput = render;
+$("qr").onclick = () => {
+  $("q").value = "";
+  render();
+  $("q").focus();
+};
+$("allx").onclick = () => {
+  const P = parse(),
+    allOff = P.length > 0 && P.every((x) => S.noex[x.n]);
+  P.forEach((x) => {
+    if (allOff) delete S.noex[x.n];
+    else S.noex[x.n] = true;
+  });
+  save();
+  render();
+};
 $("so").onchange = () => {
   FL.so = $("so").value;
   render();
@@ -977,6 +1213,10 @@ const packOne = (d, s, wi) => {
     sealed: s.sealed,
     imgUrl: s.imgUrl,
     dates: s.dates,
+    fav: s.fav,
+    wish: s.wish,
+    obs: s.obs,
+    logo: d.custom ? d.logo || "" : undefined,
   };
   if (wi) o.imgs = s.imgs;
   return o;
@@ -1075,6 +1315,7 @@ function importExp(o) {
         fx: o.fx,
         finds: [],
         custom: true,
+        logo: /^(https?:\/\/|data:image\/)/.test(o.logo || "") ? o.logo : "",
         serie: o.serie ? String(o.serie) : "",
         game: GAMES.some((g) => g.id === o.game) ? o.game : meta.game,
       };
@@ -1096,6 +1337,12 @@ function importExp(o) {
         s.imgUrl[k] = String(o.imgUrl[k]);
     });
   if (o.dates && typeof o.dates === "object") Object.assign(s.dates, o.dates);
+  if (o.fav && typeof o.fav === "object") Object.assign(s.fav, o.fav);
+  if (o.wish && typeof o.wish === "object") Object.assign(s.wish, o.wish);
+  if (o.obs && typeof o.obs === "object")
+    Object.keys(o.obs).forEach((k) => {
+      if (typeof o.obs[k] === "string") s.obs[k] = o.obs[k];
+    });
   if (o.fx && typeof o.fx === "object") s.fx = Object.assign(s.fx, o.fx);
   const seen = new Set(s.finds.map((z) => [z.n, z.s, z.p, z.u].join("|")));
   let add = 0;
@@ -1182,10 +1429,11 @@ function emptyGame(id) {
   meta.game = id;
   meta.cur = null;
   LS.set("meta", meta);
-  FL.so = "cat";
+  FL.so = "pbest";
   FL.k.clear();
   FL.t.clear();
   FL.f.clear();
+  FL.l.clear();
   $("q").value = "";
   $("hd").innerHTML = "";
   $("cnt").textContent = "";
@@ -1202,10 +1450,18 @@ function emptyGame(id) {
 function buildGames() {
   const g = $("games");
   g.innerHTML = "";
+  {
+    const w = document.createElement("button");
+    w.type = "button";
+    w.className = "gp" + (WM ? " on" : "");
+    w.textContent = "💖 Wishlist";
+    w.onclick = enterWish;
+    g.appendChild(w);
+  }
   GAMES.forEach((x) => {
     const b = document.createElement("button");
     b.type = "button";
-    b.className = "gp" + (x.id === meta.game ? " on" : "");
+    b.className = "gp" + (!WM && x.id === meta.game ? " on" : "");
     const lbl = (x.icon ? x.icon + " " : "") + x.name;
     if (x.img) {
       const im = document.createElement("img");
@@ -1221,7 +1477,8 @@ function buildGames() {
       b.appendChild(im);
     } else b.textContent = lbl;
     b.onclick = () => {
-      if (x.id === meta.game) return;
+      if (x.id === meta.game && !WM) return;
+      exitWish();
       const pool = EXPS.filter((e) => gameOf(e) === x.id),
         last = pool.find((e) => e.id === meta.last[x.id]) || pool[0];
       if (last) {
@@ -1329,10 +1586,11 @@ function openExp(d) {
     .concat(meta.recent.filter((x) => x !== d.id))
     .slice(0, 5);
   LS.set("meta", meta);
-  FL.so = "cat";
+  FL.so = "pbest";
   FL.k.clear();
   FL.t.clear();
   FL.f.clear();
+  FL.l.clear();
   $("ok").value = String(S.ok).replace(".", ",");
   $("mx").value = String(S.mx).replace(".", ",");
   $("csv").value = S.csv;
@@ -1349,6 +1607,29 @@ function openExp(d) {
     history.replaceState(null, "", "#" + d.id);
   } catch (e) {}
 }
+let NXI = "";
+$("nxb").onclick = () => $("nxf").click();
+$("nxf").onchange = (e) => {
+  const fl = e.target.files[0];
+  e.target.value = "";
+  if (!fl) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const r = Math.min(1, 240 / Math.max(img.width, img.height)),
+        cv = document.createElement("canvas");
+      cv.width = Math.round(img.width * r);
+      cv.height = Math.round(img.height * r);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      NXI = cv.toDataURL("image/webp", 0.85);
+      $("nxi").value = "";
+      $("nxh").textContent = "Imagen adjuntada ✓";
+    };
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(fl);
+};
 $("nxc").onclick = () => {
   const nm = $("nxn")
     .value.trim()
@@ -1364,6 +1645,8 @@ $("nxc").onclick = () => {
     b = id,
     i = 2;
   while (EXPS.some((e) => e.id === id)) id = b + "-" + i++;
+  const nxu = $("nxi").value.trim(),
+    logo = NXI || (/^https?:\/\//.test(nxu) ? nxu : "");
   const d = {
     id,
     name: nm,
@@ -1378,10 +1661,14 @@ $("nxc").onclick = () => {
     custom: true,
     game: meta.game || (GAMES[0] && GAMES[0].id),
   };
+  if (logo) d.logo = logo;
   EXPS.push(d);
   meta.custom.push(d);
   LS.set("meta", meta);
   $("nxn").value = "";
+  $("nxi").value = "";
+  $("nxh").textContent = "";
+  NXI = "";
   dlgClose($("xpd"));
   openExp(d);
 };
@@ -1455,6 +1742,237 @@ window.addEventListener("appinstalled", () => {
 });
 if ("serviceWorker" in navigator && /^https?:/.test(location.protocol))
   navigator.serviceWorker.register("sw.js").catch(() => {});
+/* ===== Noticias y calendario ===== */
+const SRV = { news: [], cal: [] };
+const NW = Object.assign({ mine: [], hidden: [] }, LS.get("news")),
+  CL = Object.assign({ mine: [], hidden: [] }, LS.get("cal"));
+[NW, CL].forEach((o) => {
+  if (!Array.isArray(o.mine)) o.mine = [];
+  if (!Array.isArray(o.hidden)) o.hidden = [];
+});
+const okUrl = (v) => {
+  try {
+    const u = new URL(String(v || "").trim());
+    return /^https?:$/.test(u.protocol) ? u.href : "";
+  } catch (e) {
+    return "";
+  }
+};
+const pad2 = (n) => String(n).padStart(2, "0");
+function drawNews() {
+  const box = $("nwl");
+  box.innerHTML = "";
+  const vis = SRV.news
+    .map((x) => ({ n: x.n || x.u, u: x.u, s: 1 }))
+    .concat(NW.mine.map((x) => ({ n: x.n, u: x.u, s: 0 })))
+    .filter((x) => !(x.s && NW.hidden.includes(x.u)));
+  if (!vis.length) box.textContent = "Todavía no hay webs.";
+  vis.forEach((x) => {
+    const r = document.createElement("div"),
+      a = document.createElement("a"),
+      b = document.createElement("button");
+    r.className = "nwr";
+    a.href = x.u;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = x.n;
+    b.type = "button";
+    b.className = "x";
+    b.textContent = "✕";
+    b.title = x.s
+      ? "Ocultar en este navegador (el archivo del servidor no cambia)"
+      : "Quitar";
+    b.onclick = () => {
+      if (x.s) NW.hidden.push(x.u);
+      else NW.mine = NW.mine.filter((m) => m.u !== x.u);
+      LS.set("news", NW);
+      drawNews();
+    };
+    r.append(a, b);
+    box.appendChild(r);
+  });
+  $("nwr").hidden = !NW.hidden.length;
+}
+$("nwa").onclick = () => {
+  const u = okUrl($("nwu").value);
+  if (!u || NW.mine.some((m) => m.u === u)) return;
+  NW.mine.push({
+    n: $("nwn").value.trim() || new URL(u).hostname.replace(/^www\./, ""),
+    u,
+  });
+  LS.set("news", NW);
+  $("nwn").value = "";
+  $("nwu").value = "";
+  drawNews();
+};
+$("nwr").onclick = () => {
+  NW.hidden = [];
+  LS.set("news", NW);
+  drawNews();
+};
+let calY = new Date().getFullYear(),
+  calM = new Date().getMonth();
+const calAll = () =>
+  SRV.cal
+    .map((x) => ({
+      id: "s|" + x.d + "|" + x.t,
+      d: x.d,
+      t: String(x.t),
+      c: x.c || "#2563eb",
+      s: 1,
+    }))
+    .concat(CL.mine.map((x) => Object.assign({ s: 0 }, x)))
+    .filter((x) => !(x.s && CL.hidden.includes(x.id)));
+function drawCal() {
+  const first = new Date(calY, calM, 1),
+    lead = (first.getDay() + 6) % 7,
+    days = new Date(calY, calM + 1, 0).getDate(),
+    now = new Date(),
+    today =
+      now.getFullYear() +
+      "-" +
+      pad2(now.getMonth() + 1) +
+      "-" +
+      pad2(now.getDate()),
+    all = calAll(),
+    g = $("calg");
+  $("calm").textContent = first.toLocaleDateString("es-ES", {
+    month: "long",
+    year: "numeric",
+  });
+  g.innerHTML = "";
+  ["L", "M", "X", "J", "V", "S", "D"].forEach((t) => {
+    const h = document.createElement("div");
+    h.className = "ch";
+    h.textContent = t;
+    g.appendChild(h);
+  });
+  for (let i = 0; i < lead; i++) g.appendChild(document.createElement("div"));
+  for (let d = 1; d <= days; d++) {
+    const ds = calY + "-" + pad2(calM + 1) + "-" + pad2(d),
+      c = document.createElement("div"),
+      n = document.createElement("span");
+    c.className =
+      "cd" +
+      (ds === today ? " hoy" : "") +
+      (ds === $("cad").value ? " sel" : "");
+    n.textContent = d;
+    c.appendChild(n);
+    all
+      .filter((x) => x.d === ds)
+      .forEach((x) => {
+        const p = document.createElement("i");
+        p.style.background = x.c;
+        p.title = x.t;
+        c.appendChild(p);
+      });
+    c.onclick = () => {
+      $("cad").value = ds;
+      drawCal();
+    };
+    g.appendChild(c);
+  }
+  const box = $("cal"),
+    pre = calY + "-" + pad2(calM + 1),
+    mes = all
+      .filter((x) => x.d.startsWith(pre))
+      .sort((a, b) => a.d.localeCompare(b.d));
+  box.innerHTML = "";
+  if (!mes.length) box.innerHTML = '<p class="hint">Sin entradas este mes.</p>';
+  mes.forEach((x) => {
+    const r = document.createElement("div"),
+      dot = document.createElement("span"),
+      t = document.createElement("b"),
+      b = document.createElement("button");
+    r.className = "cer";
+    dot.className = "cdot";
+    dot.style.background = x.c;
+    t.textContent = fmtDate(x.d) + " · " + x.t;
+    b.type = "button";
+    b.className = "x";
+    b.textContent = "✕";
+    b.title = x.s
+      ? "Ocultar en este navegador (el archivo del servidor no cambia)"
+      : "Quitar";
+    b.onclick = () => {
+      if (x.s) CL.hidden.push(x.id);
+      else CL.mine = CL.mine.filter((m) => m.id !== x.id);
+      LS.set("cal", CL);
+      drawCal();
+    };
+    r.append(dot, t, b);
+    box.appendChild(r);
+  });
+  $("calr").hidden = !CL.hidden.length;
+}
+$("calp").onclick = () => {
+  if (--calM < 0) {
+    calM = 11;
+    calY--;
+  }
+  drawCal();
+};
+$("caln").onclick = () => {
+  if (++calM > 11) {
+    calM = 0;
+    calY++;
+  }
+  drawCal();
+};
+$("calh").onclick = () => {
+  const t = new Date();
+  calY = t.getFullYear();
+  calM = t.getMonth();
+  drawCal();
+};
+$("calb").onclick = () => {
+  drawCal();
+  dlgOpen($("cald"));
+};
+$("calx").onclick = () => dlgClose($("cald"));
+$("cald").onclick = (e) => {
+  if (e.target === $("cald")) dlgClose($("cald"));
+};
+$("caa").onclick = () => {
+  const d = $("cad").value,
+    t = $("cat").value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d) || !t) return;
+  CL.mine.push({
+    id: "m" + Date.now() + Math.random().toString(36).slice(2, 6),
+    d,
+    t,
+    c: $("cac").value || "#2563eb",
+  });
+  LS.set("cal", CL);
+  $("cat").value = "";
+  calY = +d.slice(0, 4);
+  calM = +d.slice(5, 7) - 1;
+  drawCal();
+};
+$("calr").onclick = () => {
+  CL.hidden = [];
+  LS.set("cal", CL);
+  drawCal();
+};
+async function loadExtra() {
+  const get = async (f) => {
+    try {
+      const r = await fetch("data/" + f, { cache: "no-cache" });
+      if (!r.ok) throw 0;
+      const v = await r.json();
+      return Array.isArray(v) ? v : [];
+    } catch (e) {
+      return [];
+    }
+  };
+  SRV.news = (await get("noticias.json")).filter((x) => x && okUrl(x.u));
+  SRV.cal = (await get("calendario.json")).filter(
+    (x) => x && /^\d{4}-\d{2}-\d{2}$/.test(x.d) && x.t,
+  );
+  drawNews();
+  drawCal();
+}
+
 async function init() {
   const defs = [];
   let fail = false;
@@ -1517,6 +2035,7 @@ async function init() {
   if (start) openExp(start);
   else emptyGame(meta.game);
   if (!ui.ck) dlgOpen($("ck"));
+  loadExtra();
 }
 init().catch((e) => {
   const l = document.getElementById("ld");
