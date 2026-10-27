@@ -1729,7 +1729,12 @@ window.addEventListener("beforeinstallprompt", (e) => {
   $("ins").hidden = false;
 });
 $("ins").onclick = async () => {
-  if (!ip) return;
+  if (!ip) {
+    alert(
+      "Para instalar: abre el menú del navegador (☰ o ⋮) y elige «Instalar BoosterMath…», o usa el icono de instalar de la barra de direcciones.",
+    );
+    return;
+  }
   ip.prompt();
   try {
     await ip.userChoice;
@@ -1740,6 +1745,10 @@ $("ins").onclick = async () => {
 window.addEventListener("appinstalled", () => {
   $("ins").hidden = true;
 });
+if (!matchMedia("(display-mode: standalone)").matches)
+  setTimeout(() => {
+    if (!ip) $("ins").hidden = false;
+  }, 3000);
 if ("serviceWorker" in navigator && /^https?:/.test(location.protocol))
   navigator.serviceWorker.register("sw.js").catch(() => {});
 /* ===== Noticias y calendario ===== */
