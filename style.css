@@ -528,7 +528,7 @@ h1.logo img {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-  margin: 1rem;
+  margin: 1rem 0;
 }
 .gp {
   margin: 0;
@@ -617,15 +617,20 @@ dialog::backdrop {
   border-top: 1px solid var(--bd);
   padding-top: 8px;
 }
+#nxb {
+  width: 300px;
+}
 .drow {
   display: flex;
   gap: 1rem;
+  align-items: baseline;
 }
 .drow input {
   margin: 1rem 0 0;
 }
 .drow button {
   margin: 4px 0 0;
+  width: 150px;
 }
 .btns {
   flex-wrap: wrap;
@@ -695,7 +700,7 @@ dialog::backdrop {
 }
 .cards .card {
   margin: 0;
-  padding: 1rem 1.5rem;
+  padding: 1rem 1rem;
   border-left-width: 5px;
 }
 .tt {
@@ -968,8 +973,7 @@ footer {
 }
 .cards .top .ic {
   display: flex;
-  justify-content: flex-end;
-  gap: 6px;
+  justify-content: space-between;
 }
 .cards .top .ic .x {
   margin: 0;
@@ -1010,6 +1014,7 @@ footer {
 .news summary {
   text-align: right;
   font-size: 12px;
+  margin-bottom: 10px;
 }
 .news[open] {
   background: var(--card);
@@ -1049,7 +1054,10 @@ footer {
 }
 .calf input[type="color"] {
   flex: 0 0 44px;
-  padding: 2px;
+  padding: 8px;
+  aspect-ratio: 1 / 1;
+  height: 100%;
+  cursor: pointer;
 }
 .calf button {
   margin: 0;
@@ -1186,4 +1194,54 @@ body.wm footer,
 body.wm #favs,
 body.wm #allx {
   display: none !important;
+}
+
+/* ===== confirmación y juegos propios ===== */
+#cfd {
+  width: min(420px, 94vw);
+}
+#cfx {
+  font-size: 14px;
+  color: var(--mu);
+  margin: 0 0 1rem;
+  overflow-wrap: anywhere;
+}
+#cfy {
+  background: var(--ko);
+  border-color: var(--ko);
+  color: #fff;
+}
+.gadd {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  padding-bottom: 4px;
+  padding-left: 1px;
+}
+.ig {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  margin: 6px 0;
+}
+.ig button {
+  margin: 0;
+  padding: 6px 0;
+  font-size: 20px;
+  line-height: 1.1;
+}
+.ig button.on {
+  border-color: var(--ok);
+  background: var(--okb);
+}
+#gmd .drow input {
+  margin: 4px 0 0;
+}
+#gmd .dn {
+  margin-top: 12px;
 }

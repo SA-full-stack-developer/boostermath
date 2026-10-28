@@ -59,6 +59,7 @@ let EXPS = [],
 if (!meta || !Array.isArray(meta.custom)) meta = { cur: "", custom: [] };
 if (!meta.last || typeof meta.last !== "object") meta.last = {};
 if (!Array.isArray(meta.recent)) meta.recent = [];
+if (!Array.isArray(meta.games)) meta.games = [];
 const ui = LS.get("ui") || {};
 const saveUi = () => LS.set("ui", ui);
 let GAMES = [];
@@ -327,9 +328,10 @@ function finds(x, c) {
     dl.textContent = "\uD83D\uDDD1\uFE0F";
     dl.title = "Eliminar hallazgo";
     dl.setAttribute("aria-label", "Eliminar hallazgo");
-    dl.onclick = () => {
-      if (!confirm(`¿Eliminar el hallazgo de «${z.s}» (${f(z.p)} €)?`)) return;
-      S.finds.splice(S.finds.indexOf(z), 1);
+    dl.onclick = async () => {
+      if (!(await ask("Eliminar hallazgo", `«${z.s}» · ${f(z.p)} €`))) return;
+      const ix = S.finds.indexOf(z);
+      if (ix >= 0) S.finds.splice(ix, 1);
       save();
       render();
     };
@@ -912,11 +914,12 @@ function render() {
       render();
     };
     const rm = c.querySelector(".rm");
-    rm.onclick = () => {
+    rm.onclick = async () => {
       if (
-        !confirm(
-          `¿Eliminar «${x.n}»?\nSe borrarán también sus hallazgos y su foto.`,
-        )
+        !(await ask(
+          "Eliminar producto",
+          `«${x.n}» se borrará junto con sus hallazgos, su foto y sus notas.`,
+        ))
       )
         return;
       const L2 = S.csv.split("\n"),
@@ -1488,6 +1491,14 @@ function buildGames() {
     };
     g.appendChild(b);
   });
+  const add = document.createElement("button");
+  add.type = "button";
+  add.className = "gp gadd";
+  add.textContent = "+";
+  add.title = "Añadir juego";
+  add.setAttribute("aria-label", "Añadir juego");
+  add.onclick = openGameDlg;
+  g.appendChild(add);
 }
 function updPicker() {
   $("xpn").textContent =
@@ -1672,20 +1683,18 @@ $("nxc").onclick = () => {
   dlgClose($("xpd"));
   openExp(d);
 };
-let rxArm = 0;
-$("rx").onclick = () => {
-  const b = $("rx");
-  if (!rxArm) {
-    rxArm = 1;
-    b.textContent = "\u00bfSeguro? Pulsa otra vez";
-    setTimeout(() => {
-      rxArm = 0;
-      b.textContent = "Restablecer expansi\u00f3n";
-    }, 3000);
+$("rx").onclick = async () => {
+  const own = !!cur.custom;
+  if (
+    !(await ask(
+      own ? "Eliminar expansión" : "Restablecer expansión",
+      own
+        ? `«${cur.name}» es una expansión propia: se eliminará con todos sus datos de este navegador.`
+        : `Se borrarán tus hallazgos, ediciones, fotos y marcas de «${cur.name}» y volverá a los datos originales.`,
+      own ? "Eliminar" : "Restablecer",
+    ))
+  )
     return;
-  }
-  rxArm = 0;
-  b.textContent = "Restablecer expansi\u00f3n";
   LS.del("s." + cur.id);
   if (cur.custom) {
     EXPS = EXPS.filter((e) => e !== cur);
@@ -1791,7 +1800,17 @@ function drawNews() {
     b.title = x.s
       ? "Ocultar en este navegador (el archivo del servidor no cambia)"
       : "Quitar";
-    b.onclick = () => {
+    b.onclick = async () => {
+      if (
+        !(await ask(
+          x.s ? "Ocultar web" : "Quitar web",
+          x.s
+            ? `«${x.n}» se ocultará solo en este navegador; el archivo del servidor no cambia.`
+            : `«${x.n}» se quitará de tu lista.`,
+          x.s ? "Ocultar" : "Quitar",
+        ))
+      )
+        return;
       if (x.s) NW.hidden.push(x.u);
       else NW.mine = NW.mine.filter((m) => m.u !== x.u);
       LS.set("news", NW);
@@ -1882,12 +1901,9 @@ function drawCal() {
     g.appendChild(c);
   }
   const box = $("cal"),
-    pre = calY + "-" + pad2(calM + 1),
-    mes = all
-      .filter((x) => x.d.startsWith(pre))
-      .sort((a, b) => a.d.localeCompare(b.d));
+    sel = $("cad").value,
+    mes = sel ? all.filter((x) => x.d === sel) : [];
   box.innerHTML = "";
-  if (!mes.length) box.innerHTML = '<p class="hint">Sin entradas este mes.</p>';
   mes.forEach((x) => {
     const r = document.createElement("div"),
       dot = document.createElement("span"),
@@ -1896,14 +1912,24 @@ function drawCal() {
     r.className = "cer";
     dot.className = "cdot";
     dot.style.background = x.c;
-    t.textContent = fmtDate(x.d) + " · " + x.t;
+    t.textContent = x.t;
     b.type = "button";
     b.className = "x";
     b.textContent = "✕";
     b.title = x.s
       ? "Ocultar en este navegador (el archivo del servidor no cambia)"
       : "Quitar";
-    b.onclick = () => {
+    b.onclick = async () => {
+      if (
+        !(await ask(
+          x.s ? "Ocultar entrada" : "Quitar entrada",
+          x.s
+            ? `«${x.t}» se ocultará solo en este navegador; el archivo del servidor no cambia.`
+            : `«${x.t}» se quitará del calendario.`,
+          x.s ? "Ocultar" : "Quitar",
+        ))
+      )
+        return;
       if (x.s) CL.hidden.push(x.id);
       else CL.mine = CL.mine.filter((m) => m.id !== x.id);
       LS.set("cal", CL);
@@ -1928,14 +1954,16 @@ $("caln").onclick = () => {
   }
   drawCal();
 };
-$("calh").onclick = () => {
+const calToday = () => {
   const t = new Date();
   calY = t.getFullYear();
   calM = t.getMonth();
+  $("cad").value = calY + "-" + pad2(calM + 1) + "-" + pad2(t.getDate());
   drawCal();
 };
+$("calh").onclick = calToday;
 $("calb").onclick = () => {
-  drawCal();
+  calToday();
   dlgOpen($("cald"));
 };
 $("calx").onclick = () => dlgClose($("cald"));
@@ -1982,6 +2010,207 @@ async function loadExtra() {
   drawCal();
 }
 
+/* ===== Confirmación y juegos propios ===== */
+function ask(title, text, okLabel) {
+  return new Promise((res) => {
+    const d = $("cfd");
+    let done = false;
+    const end = (v) => {
+      if (done) return;
+      done = true;
+      d.onclose = null;
+      d.onclick = null;
+      dlgClose(d);
+      res(v);
+    };
+    $("cft").textContent = title;
+    $("cfx").textContent = text || "";
+    $("cfy").textContent = okLabel || "Eliminar";
+    $("cfy").onclick = () => end(true);
+    $("cfn").onclick = () => end(false);
+    d.onclose = () => end(false);
+    d.onclick = (e) => {
+      if (e.target === d) end(false);
+    };
+    dlgOpen(d);
+    $("cfn").focus();
+  });
+}
+const ICONS = [
+  "⚡",
+  "🔥",
+  "💧",
+  "🌿",
+  "🐉",
+  "🃏",
+  "🎴",
+  "🎲",
+  "🧙",
+  "⚔️",
+  "🛡️",
+  "🏆",
+  "⭐",
+  "🌟",
+  "💎",
+  "👾",
+  "🤖",
+  "🦖",
+  "🐱",
+  "🐶",
+  "🦊",
+  "🚀",
+  "🌍",
+  "🎮",
+  "🧩",
+  "🔮",
+  "📦",
+  "💀",
+  "👑",
+  "🦄",
+  "🍀",
+  "🌙",
+  "☀️",
+  "❄️",
+  "🎯",
+  "🏰",
+  "🧪",
+  "🪄",
+  "🕹️",
+  "🎁",
+];
+let GMI = ICONS[0],
+  GMD = "";
+function drawGmIcons() {
+  const box = $("gmi");
+  box.innerHTML = "";
+  ICONS.forEach((ic) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = ic;
+    b.className = ic === GMI ? "on" : "";
+    b.onclick = () => {
+      GMI = ic;
+      drawGmIcons();
+    };
+    box.appendChild(b);
+  });
+}
+function drawGmList() {
+  const box = $("gml");
+  box.innerHTML = "";
+  const mine = GAMES.filter((g) => g.custom);
+  if (!mine.length) return;
+  const h = document.createElement("b");
+  h.textContent = "Mis juegos";
+  box.appendChild(h);
+  mine.forEach((g) => {
+    const r = document.createElement("div"),
+      t = document.createElement("span"),
+      b = document.createElement("button");
+    r.className = "cer";
+    t.style.flex = "1";
+    t.textContent = (g.icon ? g.icon + " " : "") + g.name;
+    b.type = "button";
+    b.className = "x";
+    b.textContent = "✕";
+    b.title = "Eliminar juego";
+    b.onclick = async () => {
+      if (
+        !(await ask(
+          "Eliminar juego",
+          `«${g.name}» y sus expansiones propias se borrarán de este navegador.`,
+        ))
+      )
+        return;
+      delGame(g.id);
+      drawGmList();
+    };
+    r.append(t, b);
+    box.appendChild(r);
+  });
+}
+function delGame(id) {
+  exitWish();
+  EXPS.filter((e) => e.game === id).forEach((e) => LS.del("s." + e.id));
+  EXPS = EXPS.filter((e) => e.game !== id);
+  meta.custom = meta.custom.filter((e) => e.game !== id);
+  meta.games = meta.games.filter((g) => g.id !== id);
+  GAMES = GAMES.filter((g) => g.id !== id);
+  delete meta.last[id];
+  if (meta.game === id) meta.game = GAMES[0].id;
+  if (!EXPS.length) EXPS.push(newBlank());
+  LS.set("meta", meta);
+  const keep = EXPS.includes(cur)
+    ? cur
+    : EXPS.find((e) => gameOf(e) === meta.game);
+  keep ? openExp(keep) : emptyGame(meta.game);
+}
+function openGameDlg() {
+  GMI = ICONS[0];
+  GMD = "";
+  $("gmn").value = "";
+  $("gmu").value = "";
+  $("gmh").textContent = "";
+  drawGmIcons();
+  drawGmList();
+  dlgOpen($("gmd"));
+  $("gmn").focus();
+}
+$("gmx").onclick = () => dlgClose($("gmd"));
+$("gmd").onclick = (e) => {
+  if (e.target === $("gmd")) dlgClose($("gmd"));
+};
+$("gmb").onclick = () => $("gmf").click();
+$("gmf").onchange = (e) => {
+  const fl = e.target.files[0];
+  e.target.value = "";
+  if (!fl) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const r = Math.min(1, 160 / Math.max(img.width, img.height)),
+        cv = document.createElement("canvas");
+      cv.width = Math.round(img.width * r);
+      cv.height = Math.round(img.height * r);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      GMD = cv.toDataURL("image/webp", 0.85);
+      $("gmu").value = "";
+      $("gmh").textContent = "Imagen adjuntada ✓";
+    };
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(fl);
+};
+$("gmc").onclick = () => {
+  const nm = $("gmn").value.trim();
+  if (!nm) {
+    $("gmh").textContent = "Escribe un nombre para el juego.";
+    return;
+  }
+  const u = $("gmu").value.trim(),
+    img = GMD || (/^https?:\/\//.test(u) ? u : ""),
+    base =
+      "g-" +
+      (nm
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || "juego");
+  let id = base,
+    k = 2;
+  while (GAMES.some((g) => g.id === id)) id = base + "-" + k++;
+  const g = { id, name: nm, icon: GMI };
+  if (img) g.img = img;
+  meta.games.push(g);
+  GAMES.push(Object.assign({ custom: true }, g));
+  LS.set("meta", meta);
+  exitWish();
+  dlgClose($("gmd"));
+  emptyGame(id);
+};
+
 async function init() {
   const defs = [];
   let fail = false;
@@ -2022,6 +2251,10 @@ async function init() {
   }
   if (!GAMES.length)
     GAMES = [{ id: "pokemon", name: "Pok\u00e9mon", icon: "\u26A1" }];
+  meta.games.forEach((g) => {
+    if (g && g.id && !GAMES.some((x) => x.id === g.id))
+      GAMES.push(Object.assign({}, g, { custom: true }));
+  });
   if (fail) {
     $("ld").hidden = false;
     $("ld").textContent = defs.length

@@ -3,6 +3,8 @@
 blister-2-sobres-knock-out.png    <-  Blíster 2 sobres (Knock Out)
 minilata-2-sobres.png    <-  Minilata 2 sobres
 pegatinas-3-sobres.png    <-  Pegatinas + 3 sobres
+first-partners-illustration-collection-3-sobres.png    <-  First Partners Illustration Collection 3 sobres
+caja-pokemon-day-2026-special-collection.png    <-  Caja Pokémon Day 2026 Special Collection
 poster-3-sobres.png    <-  Póster + 3 sobres
 caja-ex-4-sobres.png    <-  Caja ex + 4 sobres
 lata-ex-4-sobres.png    <-  Lata ex + 4 sobres
@@ -26,9 +28,10 @@ mazo-de-lujo-espeon-o-umbreon-cn.png    <-  Mazo de lujo Espeon o Umbreon CN
 caja-coleccionista-espeon-umbreon-cn.png    <-  Caja coleccionista Espeon+Umbreon CN
 caja-charizard-cn.png    <-  Caja Charizard CN
 caja-20-sobres-tw-hk.png    <-  Caja 20 sobres TW/HK
-mazo-espeon-umbreon-tw-hk.png    <-  Mazo Espeon+Umbreon TW/HK
 especial-primeros-companeros-tw-hk.png    <-  Especial Primeros compañeros TW/HK
 futuristic-box-jp-kr-cn-tw.png    <-  Futuristic Box JP/KR/CN/TW
+
+=== undefined  ->  assets/productos/undefined/ ===
 
 === Megaevolución: Dominio Delta (Delta Reign) · Storm Emeralda (M6)  ->  assets/productos/dominio-delta/ ===
 blister-1-sobre-spritzee.png    <-  Blíster 1 sobre (Spritzee)
@@ -45,3 +48,5 @@ caja-30-sobres-kr.png    <-  Caja 30 sobres KR
 caja-30-sobres-tw-hk.png    <-  Caja 30 sobres TW/HK
 10-sobres-plus-tw-hk.png    <-  10 sobres PLUS TW/HK
 pack-companero-mega-tw-hk.png    <-  Pack Compañero Mega TW/HK
+
+=== undefined  ->  assets/productos/undefined/ ===

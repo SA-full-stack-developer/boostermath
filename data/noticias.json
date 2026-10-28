@@ -1,4 +1,46 @@
 [
-  { "n": "Pokémon (oficial)", "u": "https://www.pokemon.com/es/" },
-  { "n": "PokeBeach", "u": "https://www.pokebeach.com/" }
+  {
+    "n": "Pokémon (oficial)",
+    "u": "https://www.pokemon.com/es/noticias"
+  },
+  {
+    "n": "Stock TCG",
+    "u": "https://stocktcg.net/noticias"
+  },
+  {
+    "n": "Samurai Sword Tokyo (Japan)",
+    "u": "https://samuraiswordtokyo.com/es/blogs/news"
+  },
+  {
+    "n": "pokemoncard (Korea)",
+    "u": "https://pokemoncard.co.kr/card/category/info3"
+  },
+  {
+    "n": "Pokémon (Japan)",
+    "u": "https://www.pokemon.co.jp/info/cat_card/"
+  },
+  {
+    "n": "Pokeguardian",
+    "u": "https://www.pokeguardian.com/"
+  },
+  {
+    "n": "Pokémon Card(Japan)",
+    "u": "https://www.pokemon-card.com/"
+  },
+  {
+    "n": "Pokémon (EEUU)",
+    "u": "https://www.pokemon.com/us/pokemon-news"
+  },
+  {
+    "n": "Pokémon TCG en X(EEUU)",
+    "u": "https://x.com/pokemontcg"
+  },
+  {
+    "n": "PokeBeach en X(EEUU)",
+    "u": "https://x.com/PokeBeach"
+  },
+  {
+    "n": "Pokémon Card S en X(Japan)",
+    "u": "https://x.com/pokemoncard_s"
+  }
 ]
