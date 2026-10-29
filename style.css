@@ -890,6 +890,7 @@ footer {
 .xc .xi img {
   max-width: 100%;
   object-fit: contain;
+  max-height: stretch;
 }
 .xc b {
   font-size: 12px;
@@ -974,6 +975,7 @@ footer {
 .cards .top .ic {
   display: flex;
   justify-content: space-between;
+  gap: 6px;
 }
 .cards .top .ic .x {
   margin: 0;
@@ -1245,6 +1247,7 @@ body.wm #allx {
 #gmd .dn {
   margin-top: 12px;
 }
+
 /* ===== editar producto ===== */
 #epd label {
   display: block;
@@ -1260,6 +1263,7 @@ body.wm #allx {
   margin: 6px 0;
   font-size: 13px;
 }
+
 /* ===== acciones y editar juego ===== */
 .acb {
   display: flex;

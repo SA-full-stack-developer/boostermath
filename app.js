@@ -1127,12 +1127,12 @@ $("fclr").onclick = () => {
   ["nn", "nk", "ne", "nd", "ft", "fpr", "fu", "fim"].forEach(
     (id) => ($(id).value = ""),
   );
+  FIMD = "";
+  $("fimh").textContent = "";
   $("fl").selectedIndex = 0;
   fa = true;
   $("fa").innerHTML = "&#9989; Disponible";
 };
-FIMD = "";
-$("fimh").textContent = "";
 function buildFx() {
   $("fx").innerHTML = "";
   Object.keys(S.fx).forEach((k) => {
@@ -2295,6 +2295,27 @@ $("gmc").onclick = () => {
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "") || "juego");
+  if (GME) {
+    const g = GAMES.find((x) => x.id === GME);
+    if (!g) return;
+    g.name = nm;
+    g.icon = GMI;
+    if (img) g.img = img;
+    else delete g.img;
+    if (g.custom) {
+      const m = meta.games.find((x) => x.id === GME);
+      if (m) {
+        m.name = nm;
+        m.icon = GMI;
+        if (img) m.img = img;
+        else delete m.img;
+      }
+    } else meta.gameOv[GME] = { name: nm, icon: GMI, img };
+    LS.set("meta", meta);
+    dlgClose($("gmd"));
+    buildGames();
+    return;
+  }
   let id = base,
     k = 2;
   while (GAMES.some((g) => g.id === id)) id = base + "-" + k++;
@@ -2307,6 +2328,7 @@ $("gmc").onclick = () => {
   dlgClose($("gmd"));
   emptyGame(id);
 };
+
 /* ===== Editar producto y foto en el formulario ===== */
 function photoData(fl, cb) {
   const fr = new FileReader();
@@ -2428,6 +2450,7 @@ $("eps").onclick = () => {
   dlgClose($("epd"));
   render();
 };
+
 /* ===== Copiar / mover producto ===== */
 let MVX = null;
 const stateOf = (d) =>
@@ -2515,6 +2538,7 @@ $("mvy").onclick = () => {
   dlgClose($("mvd"));
   render();
 };
+
 async function init() {
   const defs = [];
   let fail = false;
