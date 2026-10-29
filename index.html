@@ -176,11 +176,17 @@
         <option>JP</option>
         <option>KO</option>
         <option>ZH</option></select
-      ><input id="fu" type="url" placeholder="Enlace (opcional)" /><button
-        type="button"
-        id="fa"
-        style="width: 100%"
-      >
+      ><input id="fu" type="url" placeholder="Enlace (opcional)" />
+      <div class="drow">
+        <input
+          id="fim"
+          type="url"
+          placeholder="Foto del producto: enlace (opcional)"
+        /><button type="button" id="fimb">Subir foto</button>
+      </div>
+      <input id="fimf" type="file" accept="image/*" hidden />
+      <p class="hint" id="fimh"></p>
+      <button type="button" id="fa" style="width: 100%">
         &#9989; Disponible
       </button>
       <div class="btns">
@@ -385,9 +391,10 @@
 
     <dialog id="gmd" aria-label="Nuevo juego">
       <div class="dh">
-        <b>＋ Nuevo juego</b
+        <b id="gmt">＋ Nuevo juego</b
         ><button type="button" id="gmx" class="x" aria-label="Cerrar">✕</button>
       </div>
+      <select id="gms" hidden></select>
       <input id="gmn" placeholder="Nombre del juego" autocomplete="off" />
       <div class="pgh">Icono</div>
       <div class="ig" id="gmi"></div>
@@ -402,12 +409,57 @@
       </div>
       <input id="gmf" type="file" accept="image/*" hidden />
       <p class="hint" id="gmh"></p>
+      <button type="button" id="gmr" class="clr" hidden>Quitar imagen</button>
       <div class="btns">
         <button type="button" id="gmc" class="pri">Crear juego</button>
       </div>
       <div class="dn" id="gml"></div>
     </dialog>
-
+    <dialog id="epd" aria-label="Editar producto">
+      <div class="dh">
+        <b>✏️ Editar producto</b
+        ><button type="button" id="epx" class="x" aria-label="Cerrar">✕</button>
+      </div>
+      <label>Nombre<input id="epn" autocomplete="off" /></label>
+      <label>Sobres (0 si no trae)<input id="epk" inputmode="numeric" /></label>
+      <label>PVP (15,99 · 68 CNY · 7200 JPY…)<input id="epp" /></label>
+      <label
+        >Extras (descripción:valor|descripción:valor)<input id="epe"
+      /></label>
+      <label>Origen<input id="epo" /></label>
+      <label
+        >Idioma
+        <select id="epl">
+          <option value="">Automático</option>
+          <option>ES</option>
+          <option>EN</option>
+          <option>JP</option>
+          <option>KO</option>
+          <option>ZH</option>
+        </select>
+      </label>
+      <label>Fecha de salida<input id="epf" type="date" /></label>
+      <label>Foto (enlace)<input id="epu" type="url" /></label>
+      <p class="hint" id="epm"></p>
+      <div class="btns">
+        <button type="button" id="epc">Cancelar</button>
+        <button type="button" id="eps" class="pri">Guardar</button>
+      </div>
+    </dialog>
+    <dialog id="mvd" aria-label="Mover o copiar producto">
+      <div class="dh">
+        <b id="mvt">Mover producto</b
+        ><button type="button" id="mvx" class="x" aria-label="Cerrar">✕</button>
+      </div>
+      <p class="hint" id="mvp"></p>
+      <div class="pgh">Destino (serie y colección)</div>
+      <select id="mvs"></select>
+      <p class="hint" id="mvm"></p>
+      <div class="btns">
+        <button type="button" id="mvc">Cancelar</button>
+        <button type="button" id="mvy" class="pri">Mover</button>
+      </div>
+    </dialog>
     <dialog id="ck" aria-label="Aviso de almacenamiento">
       <div class="dh"><b>🍪 Almacenamiento y cookies</b></div>
       <p>

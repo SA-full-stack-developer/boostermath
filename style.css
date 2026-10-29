@@ -1245,3 +1245,32 @@ body.wm #allx {
 #gmd .dn {
   margin-top: 12px;
 }
+/* ===== editar producto ===== */
+#epd label {
+  display: block;
+  font-size: 12px;
+  color: var(--mu);
+  margin-top: 8px;
+}
+#epd input,
+#epd select {
+  text-align: left;
+}
+.edp {
+  margin: 6px 0;
+  font-size: 13px;
+}
+/* ===== acciones y editar juego ===== */
+.acb {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 6px 0;
+}
+.acb button {
+  margin: 0;
+  font-size: 13px;
+}
+#gms {
+  margin-top: 8px;
+}

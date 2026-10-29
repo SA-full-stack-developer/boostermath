@@ -60,6 +60,7 @@ if (!meta || !Array.isArray(meta.custom)) meta = { cur: "", custom: [] };
 if (!meta.last || typeof meta.last !== "object") meta.last = {};
 if (!Array.isArray(meta.recent)) meta.recent = [];
 if (!Array.isArray(meta.games)) meta.games = [];
+if (!meta.gameOv || typeof meta.gameOv !== "object") meta.gameOv = {};
 const ui = LS.get("ui") || {};
 const saveUi = () => LS.set("ui", ui);
 let GAMES = [];
@@ -665,6 +666,7 @@ function render() {
       ".sh",
       ".mo",
       ".ob",
+      ".ac",
     ].filter((s) => {
       const d = c.querySelector(s);
       return d && d.open;
@@ -754,8 +756,9 @@ function render() {
 <div class="brk"></div>
 <details class="fd"><summary></summary><ul></ul></details>
 <details class="sh"><summary>Buscar en tiendas</summary><div class="shl"></div></details>
-<details class="mo"><summary>Detalles</summary><div class="desc"></div><div class="desc org"></div><div class="phr"><input class="pu" type="url" placeholder="URL de la foto (https://…)" aria-label="URL de la foto"><button type="button" class="pg">Guardar</button><button type="button" class="pf">Subir</button></div></details>
-<details class="ob"><summary>Observaciones</summary><textarea class="obt" rows="3" placeholder="Notas sobre este producto…" aria-label="Observaciones"></textarea></details>`;
+<details class="mo"><summary>Detalles</summary><button type="button" class="edp">✏️ Editar producto</button><div class="desc"></div><div class="desc org"></div><div class="phr"><input class="pu" type="url" placeholder="URL de la foto (https://…)" aria-label="URL de la foto"><button type="button" class="pg">Guardar</button><button type="button" class="pf">Subir</button></div></details>
+<details class="ob"><summary>Observaciones</summary><textarea class="obt" rows="3" placeholder="Notas sobre este producto…" aria-label="Observaciones"></textarea></details>
+<details class="ac"><summary>Acciones</summary><div class="acb"><button type="button" class="cpy">📋 Copiar a…</button><button type="button" class="mov">➡️ Mover a…</button></div></details>`;
     c.querySelector(".nm").textContent = x.n;
     (opened[L.id + "|" + x.n] || []).forEach((s) => {
       const d = c.querySelector(s);
@@ -827,6 +830,9 @@ function render() {
       save();
       render();
     };
+    c.querySelector(".edp").onclick = () => openEdit(x);
+    c.querySelector(".cpy").onclick = () => openMove(x, false);
+    c.querySelector(".mov").onclick = () => openMove(x, true);
     const ot = c.querySelector(".obt");
     ot.value = S.obs[x.n] || "";
     c.querySelector(".ob").classList.toggle("has", !!ot.value.trim());
@@ -1104,6 +1110,12 @@ $("fb").onclick = () => {
     const U = new URL($("fu").value.trim());
     if (/^https?:$/.test(U.protocol)) u = U.href;
   } catch (e) {}
+  const fimu = okUrl($("fim").value);
+  if (FIMD) S.imgs[n] = FIMD;
+  else if (fimu) S.imgUrl[n] = fimu;
+  FIMD = "";
+  $("fim").value = "";
+  $("fimh").textContent = "";
   S.finds.push({ n, s, p, u, a: fa, l: $("fl").value, t: Date.now() });
   save();
   $("q").value = n;
@@ -1112,13 +1124,15 @@ $("fb").onclick = () => {
   $("np").hidden = true;
 };
 $("fclr").onclick = () => {
-  ["nn", "nk", "ne", "nd", "ft", "fpr", "fu"].forEach(
+  ["nn", "nk", "ne", "nd", "ft", "fpr", "fu", "fim"].forEach(
     (id) => ($(id).value = ""),
   );
   $("fl").selectedIndex = 0;
   fa = true;
   $("fa").innerHTML = "&#9989; Disponible";
 };
+FIMD = "";
+$("fimh").textContent = "";
 function buildFx() {
   $("fx").innerHTML = "";
   Object.keys(S.fx).forEach((k) => {
@@ -1198,6 +1212,7 @@ $("cp").onclick = () => {
   }
 };
 const packOne = (d, s, wi) => {
+  const gd = GAMES.find((g) => g.custom && g.id === gameOf(d));
   const o = {
     v: 3,
     id: d.id,
@@ -1220,6 +1235,9 @@ const packOne = (d, s, wi) => {
     wish: s.wish,
     obs: s.obs,
     logo: d.custom ? d.logo || "" : undefined,
+    gameDef: gd
+      ? { id: gd.id, name: gd.name, icon: gd.icon || "", img: gd.img || "" }
+      : undefined,
   };
   if (wi) o.imgs = s.imgs;
   return o;
@@ -1230,6 +1248,12 @@ const packAll = () =>
   JSON.stringify({
     v: 3,
     all: true,
+    games: GAMES.filter((g) => g.custom).map((g) => ({
+      id: g.id,
+      name: g.name,
+      icon: g.icon || "",
+      img: g.img || "",
+    })),
     exps: EXPS.filter((d) => d === cur || LS.get("s." + d.id)).map((d) =>
       packOne(d, getState(d), $("wi").checked),
     ),
@@ -1296,8 +1320,34 @@ $("fi").onchange = (e) => {
   };
   fr.readAsText(fl);
 };
+function ensureGame(g) {
+  const id = String((g && g.id) || "");
+  if (!/^g-[\w-]+$/.test(id)) return null;
+  let x = GAMES.find((y) => y.id === id);
+  if (!x) {
+    const img = /^(https?:\/\/|data:image\/)/.test((g && g.img) || "")
+        ? g.img
+        : "",
+      raw = id.slice(2).replace(/-/g, " ");
+    x = {
+      id,
+      name: String(
+        (g && g.name) || raw.charAt(0).toUpperCase() + raw.slice(1),
+      ).slice(0, 60),
+      icon: String((g && g.icon) || "📦").slice(0, 8),
+      custom: true,
+    };
+    if (img) x.img = img;
+    GAMES.push(x);
+    meta.games.push(Object.assign({}, x, { custom: undefined }));
+    LS.set("meta", meta);
+  }
+  return x;
+}
 function importExp(o) {
   if (!o || typeof o.csv !== "string" || !Array.isArray(o.finds)) return null;
+  if (o.gameDef) ensureGame(o.gameDef);
+  else if (/^g-[\w-]+$/.test(String(o.game || ""))) ensureGame({ id: o.game });
   let d = null;
   if (o.id && /^[\w.-]+$/.test(String(o.id))) {
     d = EXPS.find((e) => e.id === o.id);
@@ -1384,6 +1434,7 @@ $("im").onclick = () => {
     say("El texto no es un export válido.");
     return;
   }
+  if (o && Array.isArray(o.games)) o.games.forEach(ensureGame);
   const list = o && o.all && Array.isArray(o.exps) ? o.exps : [o];
   let add = 0,
     n = 0,
@@ -1497,8 +1548,16 @@ function buildGames() {
   add.textContent = "+";
   add.title = "Añadir juego";
   add.setAttribute("aria-label", "Añadir juego");
-  add.onclick = openGameDlg;
+  add.onclick = () => openGameDlg(false);
   g.appendChild(add);
+  const ed = document.createElement("button");
+  ed.type = "button";
+  ed.className = "gp gadd";
+  ed.textContent = "✏️";
+  ed.title = "Editar juego";
+  ed.setAttribute("aria-label", "Editar juego");
+  ed.onclick = () => openGameDlg(true);
+  g.appendChild(ed);
 }
 function updPicker() {
   $("xpn").textContent =
@@ -2079,11 +2138,12 @@ const ICONS = [
   "🎁",
 ];
 let GMI = ICONS[0],
-  GMD = "";
+  GMD = "",
+  GME = null;
 function drawGmIcons() {
   const box = $("gmi");
   box.innerHTML = "";
-  ICONS.forEach((ic) => {
+  (GMI && !ICONS.includes(GMI) ? [GMI, ...ICONS] : ICONS).forEach((ic) => {
     const b = document.createElement("button");
     b.type = "button";
     b.textContent = ic;
@@ -2145,17 +2205,54 @@ function delGame(id) {
     : EXPS.find((e) => gameOf(e) === meta.game);
   keep ? openExp(keep) : emptyGame(meta.game);
 }
-function openGameDlg() {
-  GMI = ICONS[0];
-  GMD = "";
-  $("gmn").value = "";
-  $("gmu").value = "";
-  $("gmh").textContent = "";
+function fillGame(id) {
+  const g = GAMES.find((x) => x.id === id);
+  if (!g) return;
+  GME = id;
+  GMD = g.img && /^data:image\//.test(g.img) ? g.img : "";
+  GMI = g.icon || "";
+  $("gmn").value = g.name;
+  $("gmu").value = g.img && /^https?:\/\//.test(g.img) ? g.img : "";
+  $("gmh").textContent = GMD
+    ? "Imagen subida conservada (usa «Quitar imagen» para eliminarla)."
+    : "";
+  $("gmr").hidden = !g.img;
   drawGmIcons();
-  drawGmList();
+}
+function openGameDlg(edit) {
+  const sel = $("gms");
+  GME = null;
+  GMD = "";
+  sel.hidden = !edit;
+  $("gmt").textContent = edit ? "✏️ Editar juego" : "＋ Nuevo juego";
+  $("gmc").textContent = edit ? "Guardar cambios" : "Crear juego";
+  $("gml").hidden = !!edit;
+  $("gmr").hidden = true;
+  $("gmh").textContent = "";
+  if (edit) {
+    sel.innerHTML = "";
+    GAMES.forEach((g) =>
+      sel.appendChild(new Option((g.icon ? g.icon + " " : "") + g.name, g.id)),
+    );
+    sel.value = GAMES.some((g) => g.id === meta.game) ? meta.game : GAMES[0].id;
+    fillGame(sel.value);
+  } else {
+    GMI = ICONS[0];
+    $("gmn").value = "";
+    $("gmu").value = "";
+    drawGmIcons();
+    drawGmList();
+  }
   dlgOpen($("gmd"));
   $("gmn").focus();
 }
+$("gms").onchange = () => fillGame($("gms").value);
+$("gmr").onclick = () => {
+  GMD = "";
+  $("gmu").value = "";
+  $("gmr").hidden = true;
+  $("gmh").textContent = "La imagen se quitará al guardar.";
+};
 $("gmx").onclick = () => dlgClose($("gmd"));
 $("gmd").onclick = (e) => {
   if (e.target === $("gmd")) dlgClose($("gmd"));
@@ -2210,7 +2307,214 @@ $("gmc").onclick = () => {
   dlgClose($("gmd"));
   emptyGame(id);
 };
-
+/* ===== Editar producto y foto en el formulario ===== */
+function photoData(fl, cb) {
+  const fr = new FileReader();
+  fr.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const r = Math.min(1, 160 / Math.max(img.width, img.height)),
+        cv = document.createElement("canvas");
+      cv.width = Math.round(img.width * r);
+      cv.height = Math.round(img.height * r);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      cb(cv.toDataURL("image/jpeg", 0.72));
+    };
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(fl);
+}
+let FIMD = "";
+$("fimb").onclick = () => $("fimf").click();
+$("fimf").onchange = (e) => {
+  const fl = e.target.files[0];
+  e.target.value = "";
+  if (!fl) return;
+  photoData(fl, (u) => {
+    FIMD = u;
+    $("fim").value = "";
+    $("fimh").textContent = "Foto adjuntada ✓";
+  });
+};
+let EPX = null;
+const csvIdx = (name) => {
+  const L = S.csv.split("\n");
+  return {
+    L,
+    i: L.findIndex((l) => {
+      const t = l.trim();
+      return t && t[0] !== "#" && t.split(";")[0] === name;
+    }),
+  };
+};
+function openEdit(x) {
+  const { L, i } = csvIdx(x.n);
+  if (i < 0) return;
+  const p = L[i].trim().split(";"),
+    fe = /^\d{4}-\d{2}-\d{2}$/.test(x.fe || "") ? x.fe : "";
+  EPX = { n: x.n, fe };
+  $("epn").value = p[0] || "";
+  $("epk").value = p[1] || "";
+  $("epp").value = p[2] || "";
+  $("epe").value = p[3] || "";
+  $("epo").value = p[4] || "";
+  $("epl").value = (p[5] || "").trim().toUpperCase();
+  $("epf").value = fe;
+  $("epu").value = (S.imgUrl && S.imgUrl[x.n]) || x.ph || "";
+  $("epm").textContent = "";
+  dlgOpen($("epd"));
+  $("epn").focus();
+}
+$("epx").onclick = $("epc").onclick = () => {
+  EPX = null;
+  dlgClose($("epd"));
+};
+$("epd").onclick = (e) => {
+  if (e.target === $("epd")) $("epx").onclick();
+};
+$("eps").onclick = () => {
+  if (!EPX) return;
+  const clean = (v) =>
+      String(v)
+        .replace(/[;\n\r]/g, " ")
+        .trim(),
+    nm = clean($("epn").value).replace(/\|/g, " "),
+    kk = num($("epk").value),
+    uu = $("epu").value.trim(),
+    pu = uu ? okUrl(uu) : "",
+    err = (t) => ($("epm").textContent = t);
+  if (!nm) return err("Escribe un nombre.");
+  if (kk === null || kk < 0)
+    return err("Sobres: escribe un número (0 si no trae).");
+  if (uu && !pu) return err("El enlace de la foto no es válido.");
+  if (nm !== EPX.n && parse().some((y) => y.n === nm))
+    return err("Ya hay un producto con ese nombre.");
+  const { L, i } = csvIdx(EPX.n);
+  if (i < 0) return err("No encuentro el producto en el catálogo.");
+  const p = L[i].trim().split(";");
+  while (p.length < 8) p.push("");
+  p[0] = nm;
+  p[1] = String(kk);
+  p[2] = clean($("epp").value);
+  p[3] = clean($("epe").value);
+  p[4] = clean($("epo").value);
+  p[5] = $("epl").value;
+  if ($("epf").value !== EPX.fe) {
+    p[6] = $("epf").value;
+    if (S.dates) delete S.dates[EPX.n];
+  }
+  while (p.length > 2 && p[p.length - 1] === "") p.pop();
+  L[i] = p.join(";");
+  S.csv = L.join("\n");
+  if (nm !== EPX.n) {
+    ["noex", "sealed", "fav", "wish", "obs", "imgs", "imgUrl", "dates"].forEach(
+      (k) => {
+        const o = S[k];
+        if (o && Object.prototype.hasOwnProperty.call(o, EPX.n)) {
+          o[nm] = o[EPX.n];
+          delete o[EPX.n];
+        }
+      },
+    );
+    S.finds.forEach((z) => {
+      if (z.n === EPX.n) z.n = nm;
+    });
+  }
+  if (pu) S.imgUrl[nm] = pu;
+  else delete S.imgUrl[nm];
+  $("csv").value = S.csv;
+  save();
+  EPX = null;
+  dlgClose($("epd"));
+  render();
+};
+/* ===== Copiar / mover producto ===== */
+let MVX = null;
+const stateOf = (d) =>
+  d === cur ? S : ST.has(d.id) ? ST.get(d.id) : loadState(d);
+function openMove(x, move) {
+  const sel = $("mvs");
+  sel.innerHTML = "";
+  GAMES.forEach((g) => {
+    const list = EXPS.filter((e) => e !== cur && gameOf(e) === g.id);
+    if (!list.length) return;
+    const og = document.createElement("optgroup");
+    og.label = (g.icon ? g.icon + " " : "") + g.name;
+    list.forEach((e) => og.appendChild(new Option(e.name, e.id)));
+    sel.appendChild(og);
+  });
+  MVX = { n: x.n, move };
+  $("mvt").textContent = (move ? "Mover" : "Copiar") + " producto";
+  $("mvp").textContent =
+    "«" +
+    x.n +
+    "» se " +
+    (move ? "moverá" : "copiará") +
+    " tal cual, con sus hallazgos, foto, notas y marcas.";
+  $("mvy").textContent = move ? "Mover" : "Copiar";
+  $("mvy").disabled = !sel.options.length;
+  $("mvm").textContent = sel.options.length
+    ? ""
+    : "No hay otra colección a la que llevarlo. Crea una desde el selector de expansión.";
+  dlgOpen($("mvd"));
+}
+$("mvx").onclick = $("mvc").onclick = () => {
+  MVX = null;
+  dlgClose($("mvd"));
+};
+$("mvd").onclick = (e) => {
+  if (e.target === $("mvd")) $("mvx").onclick();
+};
+$("mvy").onclick = () => {
+  if (!MVX) return;
+  const d = EXPS.find((e) => e.id === $("mvs").value),
+    n = MVX.n,
+    mv = MVX.move,
+    src = csvIdx(n);
+  if (!d) return;
+  if (src.i < 0) {
+    $("mvm").textContent = "No encuentro el producto en el catálogo.";
+    return;
+  }
+  const sd = stateOf(d);
+  if (
+    sd.csv.split("\n").some((l) => {
+      const t = l.trim();
+      return t && t[0] !== "#" && t.split(";")[0] === n;
+    })
+  ) {
+    $("mvm").textContent =
+      "En «" +
+      d.name +
+      "» ya hay un producto llamado «" +
+      n +
+      "». Cámbiale el nombre (✏️ Editar producto) o elige otro destino.";
+    return;
+  }
+  sd.csv = sd.csv.replace(/\s*$/, "") + "\n" + src.L[src.i].trim();
+  ["noex", "sealed", "fav", "wish", "obs", "imgs", "imgUrl", "dates"].forEach(
+    (k) => {
+      if (S[k] && Object.prototype.hasOwnProperty.call(S[k], n)) {
+        sd[k][n] = S[k][n];
+        if (mv) delete S[k][n];
+      }
+    },
+  );
+  S.finds
+    .filter((z) => z.n === n)
+    .forEach((z) => sd.finds.push(Object.assign({}, z)));
+  LS.set("s." + d.id, sd);
+  if (mv) {
+    S.finds = S.finds.filter((z) => z.n !== n);
+    src.L.splice(src.i, 1);
+    S.csv = src.L.join("\n");
+    $("csv").value = S.csv;
+    save();
+  }
+  MVX = null;
+  dlgClose($("mvd"));
+  render();
+};
 async function init() {
   const defs = [];
   let fail = false;
@@ -2254,6 +2558,14 @@ async function init() {
   meta.games.forEach((g) => {
     if (g && g.id && !GAMES.some((x) => x.id === g.id))
       GAMES.push(Object.assign({}, g, { custom: true }));
+  });
+  GAMES.forEach((g) => {
+    const o = !g.custom && meta.gameOv[g.id];
+    if (!o) return;
+    if (o.name) g.name = o.name;
+    g.icon = o.icon || "";
+    if (o.img) g.img = o.img;
+    else delete g.img;
   });
   if (fail) {
     $("ld").hidden = false;
