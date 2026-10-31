@@ -61,6 +61,7 @@ if (!meta.last || typeof meta.last !== "object") meta.last = {};
 if (!Array.isArray(meta.recent)) meta.recent = [];
 if (!Array.isArray(meta.games)) meta.games = [];
 if (!meta.gameOv || typeof meta.gameOv !== "object") meta.gameOv = {};
+if (!Array.isArray(meta.hiddenGames)) meta.hiddenGames = [];
 const ui = LS.get("ui") || {};
 const saveUi = () => LS.set("ui", ui);
 let GAMES = [];
@@ -302,7 +303,9 @@ function paint(x, c) {
   }
 }
 function finds(x, c) {
-  const L = S.finds.filter((z) => z.n === x.n).sort((a, b) => a.p - b.p),
+  const L = S.finds
+      .filter((z) => z.n === x.n)
+      .sort((a, b) => (a.a === false) - (b.a === false) || a.p - b.p),
     d = c.querySelector(".fd"),
     u = d.querySelector("ul");
   d.querySelector("summary").textContent = `Hallazgos (${L.length})`;
@@ -355,6 +358,7 @@ function finds(x, c) {
     ed.title = "Editar";
     ed.onclick = () => {
       li.textContent = "";
+      li.classList.remove("fh");
       li.style.flexWrap = "wrap";
       li.style.flexDirection = "row";
       li.style.opacity = "1";
@@ -417,6 +421,19 @@ function finds(x, c) {
     fp.append(sp);
     if (tr.textContent) fp.append(tr);
     li.append(ic, nm, fp);
+    li.classList.add("fh");
+    const fo = document.createElement("textarea");
+    fo.className = "fo";
+    fo.rows = 2;
+    fo.placeholder = "Observaciones…";
+    fo.setAttribute("aria-label", "Observaciones del hallazgo");
+    fo.value = z.o || "";
+    fo.addEventListener("input", () => {
+      if (fo.value.trim()) z.o = fo.value;
+      else delete z.o;
+      save();
+    });
+    li.append(fo);
     u.appendChild(li);
   });
   if (L.length > F_N) {
@@ -456,7 +473,7 @@ const tagsOf = (x) => {
   });
   return o;
 };
-let WM = false;
+let WM = "";
 const ST = new Map();
 function useExp(d) {
   if (!ST.has(d.id)) ST.set(d.id, loadState(d));
@@ -468,12 +485,12 @@ const use = (x) => {
   if (x._d) useExp(x._d);
   return x;
 };
-function wishItems() {
+function modeItems() {
   const out = [];
   EXPS.forEach((d) => {
     useExp(d);
     parse().forEach((x) => {
-      if (S.wish[x.n]) {
+      if (S[WM === "fav" ? "fav" : "wish"][x.n]) {
         x._d = d;
         out.push(x);
       }
@@ -481,9 +498,9 @@ function wishItems() {
   });
   return out;
 }
-function enterWish() {
+function enterMode(m) {
   if (!cur) useExp(EXPS[0]);
-  WM = true;
+  WM = m;
   document.body.classList.add("wm");
   ST.clear();
   FL.so = "pbest";
@@ -496,7 +513,7 @@ function enterWish() {
   render();
 }
 function exitWish() {
-  WM = false;
+  WM = "";
   document.body.classList.remove("wm");
 }
 const FL = {
@@ -552,6 +569,7 @@ function applyFilters(P, q) {
       return [...FL.t].every((n) => t.has(n));
     });
   if (FL.f.has("wish")) A = A.filter((x) => use(x) && S.wish[x.n]);
+  if (FL.f.has("fav")) A = A.filter((x) => use(x) && S.fav[x.n]);
   if (FL.f.has("hall"))
     A = A.filter((x) => use(x) && S.finds.some((z) => z.n === x.n));
   if (FL.f.has("disp"))
@@ -627,6 +645,7 @@ function buildFilters(P) {
     "Estado",
     [
       { v: "wish", l: "\uD83D\uDC96 Deseados" },
+      { v: "fav", l: "\u2B50 Favoritos" },
       { v: "hall", l: "Con hallazgos" },
       { v: "disp", l: "Disponible" },
       { v: "sealed", l: "\uD83D\uDCE6 Lo tengo" },
@@ -658,7 +677,7 @@ function render() {
   const keep = {},
     opened = {},
     sy = window.scrollY;
-  document.querySelectorAll("#fav .card, #list .card").forEach((c) => {
+  document.querySelectorAll("#list .card").forEach((c) => {
     const i = c.querySelector(".pp");
     if (i) keep[c.dataset.n] = i.value;
     opened[c.parentNode.id + "|" + c.dataset.n] = [
@@ -674,7 +693,7 @@ function render() {
   });
   const q = $("q").value.toLowerCase(),
     L = $("list"),
-    P = WM ? wishItems() : parse(),
+    P = WM ? modeItems() : parse(),
     sel = $("fs").value;
   L.innerHTML = "";
   $("pl").innerHTML = "";
@@ -683,20 +702,8 @@ function render() {
     o.value = x.n;
     $("pl").appendChild(o);
   });
-  $("fs").innerHTML = "";
-  P.forEach((x) => {
-    const o = document.createElement("option");
-    o.textContent = x.n;
-    $("fs").appendChild(o);
-  });
-  {
-    const o = document.createElement("option");
-    o.value = "__new__";
-    o.textContent = "+ Crear producto nuevo...";
-    $("fs").appendChild(o);
-  }
-  if (sel) $("fs").value = sel;
-  $("np").hidden = $("fs").value !== "__new__";
+  FSALL = P.map((x) => x.n);
+  rebuildFs(sel);
   buildFilters(P);
   $("so").value = FL.so;
   {
@@ -717,17 +724,14 @@ function render() {
     e.className = "hint empty";
     e.textContent =
       WM && !P.length
-        ? "Todavía no tienes productos deseados: marca el ❤️ en cualquier producto."
+        ? WM === "fav"
+          ? "Todavía no tienes favoritos: marca la ⭐ en cualquier producto."
+          : "Todavía no tienes productos deseados: marca el ❤️ en cualquier producto."
         : P.length
           ? "Ning\u00fan producto coincide con la b\u00fasqueda o los filtros."
           : "Esta expansi\u00f3n no tiene productos todav\u00eda. A\u00f1\u00e1delos en el cat\u00e1logo o con \u00abA\u00f1adir hallazgo\u00bb.";
     L.appendChild(e);
   }
-  const FAV = WM ? [] : P.filter((x) => S.fav[x.n]),
-    FV = $("fav");
-  if (SORTS[FL.so]) FAV.sort(SORTS[FL.so]);
-  FV.innerHTML = "";
-  $("favs").hidden = !FAV.length;
   const build = (x, L) => {
     if (x._d) useExp(x._d);
     const c = document.createElement("div");
@@ -882,6 +886,11 @@ function render() {
     setTh();
     pu.value = (S.imgUrl && S.imgUrl[x.n]) || x.ph || "";
     th.onclick = () => {
+      const im = th.querySelector("img");
+      if (im && im.complete && im.naturalWidth) {
+        openImg(im.currentSrc || im.src);
+        return;
+      }
       c.querySelector(".mo").open = true;
       pu.focus();
     };
@@ -968,10 +977,8 @@ function render() {
     L.appendChild(c);
     paint(x, c);
     finds(x, c);
-    if (q && x.n.toLowerCase() === q) c.querySelector(".fd").open = true;
   };
   A.forEach((x) => build(x, L));
-  FAV.forEach((x) => build(x, FV));
   window.scrollTo(0, sy);
 }
 let phT = null;
@@ -1065,14 +1072,91 @@ function free() {
   r.textContent = f(p / k) + " €/sobre · " + LBL[v];
   c.classList.add(v);
 }
+let FSALL = [],
+  FKW = false,
+  FKF = false,
+  FKS = false;
+function rebuildFs(want) {
+  const fs = $("fs"),
+    q = $("fsq").value.trim().toLowerCase(),
+    keep = want === undefined ? fs.value : want;
+  fs.innerHTML = "";
+  FSALL.filter((n) => !q || n.toLowerCase().includes(q)).forEach((n) => {
+    const o = document.createElement("option");
+    o.textContent = n;
+    fs.appendChild(o);
+  });
+  const nw = document.createElement("option");
+  nw.value = "__new__";
+  nw.textContent = "+ Crear producto nuevo...";
+  fs.appendChild(nw);
+  if (keep && [...fs.options].some((o) => o.value === keep)) fs.value = keep;
+  $("np").hidden = fs.value !== "__new__";
+  $("fimbox").hidden = fs.value !== "__new__";
+}
+function drawMarks() {
+  [
+    ["fkw", FKW],
+    ["fkf", FKF],
+    ["fks", FKS],
+  ].forEach(([id, on]) => {
+    $(id).classList.toggle("on", on);
+    $(id).setAttribute("aria-pressed", on ? "true" : "false");
+  });
+}
+function syncMarks() {
+  const v = $("fs").value,
+    ex = v !== "__new__";
+  FKW = ex && !!S.wish[v];
+  FKF = ex && !!S.fav[v];
+  FKS = ex && !!S.sealed[v];
+  drawMarks();
+}
+function fsApply(onlyEmpty) {
+  const v = $("fs").value,
+    isNew = v === "__new__";
+  $("np").hidden = !isNew;
+  $("fimbox").hidden = !isNew;
+  syncMarks();
+  if (!isNew && v) {
+    const x = parse().find((y) => y.n === v);
+    if (x && x.pvp && (!onlyEmpty || !$("fpr").value))
+      $("fpr").value = String(Math.round(x.pvp * 100) / 100).replace(".", ",");
+    if (!onlyEmpty) $("fl").value = "ES";
+  }
+}
 $("fs").onchange = () => {
+  fsApply();
   const v = $("fs").value;
-  $("np").hidden = v !== "__new__";
   if (v !== "__new__") {
     $("q").value = v;
     render();
   }
 };
+$("fsq").oninput = () => {
+  rebuildFs();
+  fsApply();
+};
+$("fsn").onclick = () => {
+  $("fs").value = "__new__";
+  fsApply();
+  $("nn").focus();
+};
+$("fkw").onclick = () => {
+  FKW = !FKW;
+  drawMarks();
+};
+$("fkf").onclick = () => {
+  FKF = !FKF;
+  drawMarks();
+};
+$("fks").onclick = () => {
+  FKS = !FKS;
+  drawMarks();
+};
+$("addbox").addEventListener("toggle", () => {
+  if ($("addbox").open) fsApply(true);
+});
 let fa = true;
 $("fa").onclick = () => {
   fa = !fa;
@@ -1083,6 +1167,7 @@ $("fb").onclick = () => {
   const s = $("ft").value.trim(),
     p = num($("fpr").value);
   if (!n || !s || p === null) return;
+  const wasNew = n === "__new__";
   if (n === "__new__") {
     const nm = $("nn")
         .value.trim()
@@ -1111,20 +1196,36 @@ $("fb").onclick = () => {
     if (/^https?:$/.test(U.protocol)) u = U.href;
   } catch (e) {}
   const fimu = okUrl($("fim").value);
-  if (FIMD) S.imgs[n] = FIMD;
-  else if (fimu) S.imgUrl[n] = fimu;
+  if (wasNew && FIMD) S.imgs[n] = FIMD;
+  else if (wasNew && fimu) S.imgUrl[n] = fimu;
   FIMD = "";
   $("fim").value = "";
   $("fimh").textContent = "";
-  S.finds.push({ n, s, p, u, a: fa, l: $("fl").value, t: Date.now() });
+  const fob = $("fobs").value.trim();
+  [
+    ["wish", FKW],
+    ["fav", FKF],
+    ["sealed", FKS],
+  ].forEach(([k, on]) => {
+    if (on) S[k][n] = true;
+  });
+  S.finds.push(
+    Object.assign(
+      { n, s, p, u, a: fa, l: $("fl").value, t: Date.now() },
+      fob ? { o: fob } : {},
+    ),
+  );
   save();
+  if (wasNew) $("fsq").value = "";
   $("q").value = n;
   render();
   $("fs").value = n;
   $("np").hidden = true;
+  $("fimbox").hidden = true;
+  syncMarks();
 };
 $("fclr").onclick = () => {
-  ["nn", "nk", "ne", "nd", "ft", "fpr", "fu", "fim"].forEach(
+  ["nn", "nk", "ne", "nd", "ft", "fpr", "fu", "fim", "fobs"].forEach(
     (id) => ($(id).value = ""),
   );
   FIMD = "";
@@ -1132,6 +1233,7 @@ $("fclr").onclick = () => {
   $("fl").selectedIndex = 0;
   fa = true;
   $("fa").innerHTML = "&#9989; Disponible";
+  syncMarks();
 };
 function buildFx() {
   $("fx").innerHTML = "";
@@ -1198,15 +1300,7 @@ $("apply").onclick = () => {
   save();
   render();
 };
-$("rs").onclick = async () => {
-  if (
-    !(await ask(
-      "Restaurar catálogo",
-      `Se sustituirá el catálogo de «${cur.name}» por el original: perderás los cambios que hayas hecho a mano en él. Tus hallazgos no se tocan.`,
-      "Restaurar",
-    ))
-  )
-    return;
+$("rs").onclick = () => {
   S.csv = DEF;
   $("csv").value = DEF;
   save();
@@ -1421,6 +1515,7 @@ function importExp(o) {
           l: /^(ES|EN|JP|KO|ZH)$/.test(z.l) ? z.l : undefined,
           t: Number(z.t) || undefined,
           u: /^https?:\/\//.test(z.u || "") ? z.u : "",
+          o: typeof z.o === "string" && z.o ? z.o : undefined,
         });
         add++;
       }
@@ -1512,14 +1607,17 @@ function emptyGame(id) {
 function buildGames() {
   const g = $("games");
   g.innerHTML = "";
-  {
+  [
+    ["fav", "⭐ Favoritos"],
+    ["wish", "💖 Wishlist"],
+  ].forEach(([m, t]) => {
     const w = document.createElement("button");
     w.type = "button";
-    w.className = "gp" + (WM ? " on" : "");
-    w.textContent = "💖 Wishlist";
-    w.onclick = enterWish;
+    w.className = "gp" + (WM === m ? " on" : "");
+    w.textContent = t;
+    w.onclick = () => enterMode(m);
     g.appendChild(w);
-  }
+  });
   GAMES.forEach((x) => {
     const b = document.createElement("button");
     b.type = "button";
@@ -1566,6 +1664,25 @@ function buildGames() {
   ed.setAttribute("aria-label", "Editar juego");
   ed.onclick = () => openGameDlg(true);
   g.appendChild(ed);
+  [
+    [
+      "−",
+      "Eliminar juego (o vaciar Favoritos / Wishlist)",
+      removeGame,
+      "gp gadd",
+    ],
+    ["⬇️ Exportar", "Exportar este juego a un archivo", exportGame, "gp"],
+    ["⬆️ Importar", "Importar un juego desde un archivo", importGame, "gp"],
+  ].forEach(([t, ti, fn, cl]) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = cl;
+    b.textContent = t;
+    b.title = ti;
+    b.setAttribute("aria-label", ti);
+    b.onclick = fn;
+    g.appendChild(b);
+  });
 }
 function updPicker() {
   $("xpn").textContent =
@@ -1770,22 +1887,6 @@ $("rx").onclick = async () => {
     if (!EXPS.length) EXPS.push(newBlank());
     openExp(EXPS.find((e) => gameOf(e) === meta.game) || EXPS[0]);
   } else openExp(cur);
-};
-$("rw").onclick = async () => {
-  if (
-    !(await ask(
-      "Reiniciar la web",
-      "Se borrarán TODOS los datos de BoosterMath guardados en este navegador: expansiones y juegos propios, hallazgos, fotos, favoritos, noticias, calendario y ajustes. No se puede deshacer. Si quieres conservarlos, pulsa antes «Exportar todo».",
-      "Reiniciar todo",
-    ))
-  )
-    return;
-  try {
-    Object.keys(localStorage)
-      .filter((k) => k.startsWith(NS))
-      .forEach((k) => localStorage.removeItem(k));
-  } catch (e) {}
-  location.reload();
 };
 const newBlank = () => ({
   id: "mi-expansion",
@@ -2094,7 +2195,7 @@ async function loadExtra() {
 }
 
 /* ===== Confirmación y juegos propios ===== */
-function ask(title, text, okLabel) {
+function ask(title, text, okLabel, safe) {
   return new Promise((res) => {
     const d = $("cfd");
     let done = false;
@@ -2109,6 +2210,7 @@ function ask(title, text, okLabel) {
     $("cft").textContent = title;
     $("cfx").textContent = text || "";
     $("cfy").textContent = okLabel || "Eliminar";
+    $("cfy").classList.toggle("safe", !!safe);
     $("cfy").onclick = () => end(true);
     $("cfn").onclick = () => end(false);
     d.onclose = () => end(false);
@@ -2215,12 +2317,16 @@ function drawGmList() {
 }
 function delGame(id) {
   exitWish();
-  EXPS.filter((e) => e.game === id).forEach((e) => LS.del("s." + e.id));
-  EXPS = EXPS.filter((e) => e.game !== id);
-  meta.custom = meta.custom.filter((e) => e.game !== id);
-  meta.games = meta.games.filter((g) => g.id !== id);
-  GAMES = GAMES.filter((g) => g.id !== id);
+  const g = GAMES.find((x) => x.id === id),
+    mine = EXPS.filter((e) => gameOf(e) === id);
+  mine.forEach((e) => LS.del("s." + e.id));
+  EXPS = EXPS.filter((e) => !mine.includes(e));
+  meta.custom = meta.custom.filter((e) => !mine.some((m) => m.id === e.id));
+  if (g && g.custom) meta.games = meta.games.filter((x) => x.id !== id);
+  else if (!meta.hiddenGames.includes(id)) meta.hiddenGames.push(id);
+  GAMES = GAMES.filter((x) => x.id !== id);
   delete meta.last[id];
+  delete meta.gameOv[id];
   if (meta.game === id) meta.game = GAMES[0].id;
   if (!EXPS.length) EXPS.push(newBlank());
   LS.set("meta", meta);
@@ -2251,6 +2357,7 @@ function openGameDlg(edit) {
   $("gmt").textContent = edit ? "✏️ Editar juego" : "＋ Nuevo juego";
   $("gmc").textContent = edit ? "Guardar cambios" : "Crear juego";
   $("gml").hidden = !!edit;
+  $("gmz").hidden = !(edit && meta.hiddenGames.length);
   $("gmr").hidden = true;
   $("gmh").textContent = "";
   if (edit) {
@@ -2271,6 +2378,11 @@ function openGameDlg(edit) {
   $("gmn").focus();
 }
 $("gms").onchange = () => fillGame($("gms").value);
+$("gmz").onclick = () => {
+  meta.hiddenGames = [];
+  LS.set("meta", meta);
+  location.reload();
+};
 $("gmr").onclick = () => {
   GMD = "";
   $("gmu").value = "";
@@ -2479,17 +2591,55 @@ $("eps").onclick = () => {
 let MVX = null;
 const stateOf = (d) =>
   d === cur ? S : ST.has(d.id) ? ST.get(d.id) : loadState(d);
-function openMove(x, move) {
-  const sel = $("mvs");
+function newExpIn(gid, nm) {
+  let id =
+      nm
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || "expansion",
+    b = id,
+    i = 2;
+  while (EXPS.some((e) => e.id === id)) id = b + "-" + i++;
+  const d = {
+    id,
+    name: nm,
+    q: nm,
+    rel: [],
+    rev: 1,
+    ok: 6,
+    mx: 7.5,
+    csv: CUSTOM_CSV,
+    fx: Object.assign({}, cur ? S.fx : FX0),
+    finds: [],
+    custom: true,
+    game: gid,
+  };
+  EXPS.push(d);
+  meta.custom.push(d);
+  LS.set("meta", meta);
+  return d;
+}
+function fillMvCols() {
+  const gid = $("mvg").value,
+    sel = $("mvs");
   sel.innerHTML = "";
-  GAMES.forEach((g) => {
-    const list = EXPS.filter((e) => e !== cur && gameOf(e) === g.id);
-    if (!list.length) return;
-    const og = document.createElement("optgroup");
-    og.label = (g.icon ? g.icon + " " : "") + g.name;
-    list.forEach((e) => og.appendChild(new Option(e.name, e.id)));
-    sel.appendChild(og);
-  });
+  EXPS.filter((e) => e !== cur && gameOf(e) === gid).forEach((e) =>
+    sel.appendChild(new Option(e.name, e.id)),
+  );
+  sel.appendChild(new Option("＋ Nueva colección…", "__new__"));
+  $("mvn").hidden = sel.value !== "__new__";
+}
+function openMove(x, move) {
+  const g = $("mvg");
+  g.innerHTML = "";
+  GAMES.forEach((gm) =>
+    g.appendChild(new Option((gm.icon ? gm.icon + " " : "") + gm.name, gm.id)),
+  );
+  g.value = gameOf(cur);
+  fillMvCols();
+  $("mvn").value = "";
   MVX = { n: x.n, move };
   $("mvt").textContent = (move ? "Mover" : "Copiar") + " producto";
   $("mvp").textContent =
@@ -2499,12 +2649,13 @@ function openMove(x, move) {
     (move ? "moverá" : "copiará") +
     " tal cual, con sus hallazgos, foto, notas y marcas.";
   $("mvy").textContent = move ? "Mover" : "Copiar";
-  $("mvy").disabled = !sel.options.length;
-  $("mvm").textContent = sel.options.length
-    ? ""
-    : "No hay otra colección a la que llevarlo. Crea una desde el selector de expansión.";
+  $("mvm").textContent = "";
   dlgOpen($("mvd"));
 }
+$("mvg").onchange = fillMvCols;
+$("mvs").onchange = () => {
+  $("mvn").hidden = $("mvs").value !== "__new__";
+};
 $("mvx").onclick = $("mvc").onclick = () => {
   MVX = null;
   dlgClose($("mvd"));
@@ -2514,30 +2665,36 @@ $("mvd").onclick = (e) => {
 };
 $("mvy").onclick = () => {
   if (!MVX) return;
-  const d = EXPS.find((e) => e.id === $("mvs").value),
-    n = MVX.n,
+  const n = MVX.n,
     mv = MVX.move,
-    src = csvIdx(n);
-  if (!d) return;
-  if (src.i < 0) {
-    $("mvm").textContent = "No encuentro el producto en el catálogo.";
-    return;
-  }
-  const sd = stateOf(d);
+    src = csvIdx(n),
+    err = (t) => ($("mvm").textContent = t);
+  if (src.i < 0) return err("No encuentro el producto en el catálogo.");
+  const isNew = $("mvs").value === "__new__",
+    nm = $("mvn")
+      .value.trim()
+      .replace(/[;|\n]/g, " ");
+  if (isNew && !nm) return err("Escribe el nombre de la nueva colección.");
+  let d = isNew ? null : EXPS.find((e) => e.id === $("mvs").value);
+  if (!isNew && !d) return;
   if (
-    sd.csv.split("\n").some((l) => {
-      const t = l.trim();
-      return t && t[0] !== "#" && t.split(";")[0] === n;
-    })
-  ) {
-    $("mvm").textContent =
+    d &&
+    stateOf(d)
+      .csv.split("\n")
+      .some((l) => {
+        const t = l.trim();
+        return t && t[0] !== "#" && t.split(";")[0] === n;
+      })
+  )
+    return err(
       "En «" +
-      d.name +
-      "» ya hay un producto llamado «" +
-      n +
-      "». Cámbiale el nombre (✏️ Editar producto) o elige otro destino.";
-    return;
-  }
+        d.name +
+        "» ya hay un producto llamado «" +
+        n +
+        "». Cámbiale el nombre (✏️ Editar producto) o elige otro destino.",
+    );
+  if (isNew) d = newExpIn($("mvg").value, nm);
+  const sd = stateOf(d);
   sd.csv = sd.csv.replace(/\s*$/, "") + "\n" + src.L[src.i].trim();
   ["noex", "sealed", "fav", "wish", "obs", "imgs", "imgUrl", "dates"].forEach(
     (k) => {
@@ -2563,6 +2720,127 @@ $("mvy").onclick = () => {
   render();
 };
 
+/* ===== Eliminar / exportar / importar juego, imagen grande ===== */
+function clearMarks(key) {
+  EXPS.forEach((e) => {
+    const s = stateOf(e);
+    if (Object.keys(s[key]).length) {
+      s[key] = {};
+      LS.set("s." + e.id, s);
+    }
+  });
+  render();
+}
+async function removeGame() {
+  if (WM) {
+    const key = WM,
+      lbl = key === "fav" ? "Favoritos" : "Wishlist";
+    if (
+      !(await ask(
+        "Vaciar " + lbl,
+        "Se quitarán las marcas de todos los productos de todos los juegos. Los productos no se borran.",
+        "Vaciar",
+      ))
+    )
+      return;
+    clearMarks(key);
+    return;
+  }
+  if (GAMES.length <= 1) {
+    await ask(
+      "No se puede eliminar",
+      "Es el único juego que queda.",
+      "Entendido",
+      true,
+    );
+    return;
+  }
+  const g = GAMES.find((x) => x.id === meta.game);
+  if (!g) return;
+  const mine = EXPS.filter((e) => gameOf(e) === g.id),
+    nf = mine.reduce((a, e) => a + stateOf(e).finds.length, 0);
+  if (
+    !(await ask(
+      "Eliminar juego",
+      `«${g.name}» se eliminará con sus ${mine.length} colecciones y ${nf} hallazgos, y se borrarán todos sus datos de este navegador.` +
+        (g.custom
+          ? ""
+          : " (Al ser un juego del servidor, solo se oculta aquí; puedes restaurarlo desde ✏️.)"),
+      "Eliminar",
+    ))
+  )
+    return;
+  delGame(g.id);
+}
+async function exportGame() {
+  const g = GAMES.find((x) => x.id === meta.game);
+  if (WM || !g) {
+    await ask(
+      "Exportar juego",
+      "Elige primero un juego (no Favoritos ni Wishlist).",
+      "Entendido",
+      true,
+    );
+    return;
+  }
+  const mine = EXPS.filter((e) => gameOf(e) === g.id),
+    nf = mine.reduce((a, e) => a + stateOf(e).finds.length, 0);
+  if (
+    !(await ask(
+      "Exportar «" + g.name + "»",
+      `Se descargará un archivo .json con este juego: ${mine.length} colecciones y ${nf} hallazgos, junto con tus fotos subidas, notas y marcas (favoritos, deseados, 📦).\n\nNo se borra ni se cambia nada en este navegador. Para recuperarlo o llevarlo a otro navegador, usa ⬆️ Importar.`,
+      "Descargar",
+      true,
+    ))
+  )
+    return;
+  const t = JSON.stringify({
+    v: 3,
+    all: true,
+    games: g.custom
+      ? [{ id: g.id, name: g.name, icon: g.icon || "", img: g.img || "" }]
+      : [],
+    exps: mine.map((e) => packOne(e, stateOf(e), true)),
+  });
+  if (!dl("boostermath-juego-" + g.id + ".json", t))
+    ask(
+      "No se pudo descargar",
+      "Prueba con «Exportar todo» en la sección Datos.",
+      "Entendido",
+      true,
+    );
+}
+async function importGame() {
+  if (
+    !(await ask(
+      "Importar un juego",
+      "Elige un archivo .json exportado con ⬇️ Exportar (o con «Exportar todo»).\n\nQué pasará:\n• Si el juego o sus colecciones no existen aquí, se crean.\n• Los hallazgos del archivo se añaden a los tuyos, sin duplicar.\n• El catálogo de productos y los ajustes de esas colecciones se reemplazan por los del archivo.\n• Favoritos, deseados, 📦, notas y fotos se combinan con los que ya tienes.\n\nNo se borra ningún juego ni colección que no esté en el archivo.",
+      "Elegir archivo",
+      true,
+    ))
+  )
+    return;
+  $("gimf").click();
+}
+$("gimf").onchange = (e) => {
+  const fl = e.target.files[0];
+  e.target.value = "";
+  if (!fl) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    exitWish();
+    $("dt").value = String(fr.result);
+    $("im").onclick();
+    ask("Importar juego", $("st").textContent, "Aceptar", true);
+  };
+  fr.readAsText(fl);
+};
+function openImg(src) {
+  $("imb").src = src;
+  dlgOpen($("imd"));
+}
+$("imd").onclick = () => dlgClose($("imd"));
+
 async function init() {
   const defs = [];
   let fail = false;
@@ -2570,7 +2848,9 @@ async function init() {
     const gj = await (
       await fetch("data/games.json", { cache: "no-cache" })
     ).json();
-    GAMES = (Array.isArray(gj) ? gj : gj.games || []).filter((g) => g && g.id);
+    GAMES = (Array.isArray(gj) ? gj : gj.games || []).filter(
+      (g) => g && g.id && !meta.hiddenGames.includes(g.id),
+    );
     const jobs = [];
     GAMES.forEach((g) =>
       (g.expansions || []).forEach((f) =>
