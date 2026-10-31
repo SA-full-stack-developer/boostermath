@@ -1359,3 +1359,12 @@ body.wm #allx {
   border-color: var(--tx);
   color: var(--bg);
 }
+
+/* ===== fila de acciones de juego ===== */
+.gacts {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}

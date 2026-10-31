@@ -1648,6 +1648,8 @@ function buildGames() {
     };
     g.appendChild(b);
   });
+  const ga = document.createElement("div");
+  ga.className = "gacts";
   const add = document.createElement("button");
   add.type = "button";
   add.className = "gp gadd";
@@ -1655,7 +1657,7 @@ function buildGames() {
   add.title = "Añadir juego";
   add.setAttribute("aria-label", "Añadir juego");
   add.onclick = () => openGameDlg(false);
-  g.appendChild(add);
+  ga.appendChild(add);
   const ed = document.createElement("button");
   ed.type = "button";
   ed.className = "gp gadd";
@@ -1663,7 +1665,7 @@ function buildGames() {
   ed.title = "Editar juego";
   ed.setAttribute("aria-label", "Editar juego");
   ed.onclick = () => openGameDlg(true);
-  g.appendChild(ed);
+  ga.appendChild(ed);
   [
     [
       "−",
@@ -1681,8 +1683,9 @@ function buildGames() {
     b.title = ti;
     b.setAttribute("aria-label", ti);
     b.onclick = fn;
-    g.appendChild(b);
+    ga.appendChild(b);
   });
+  g.appendChild(ga);
 }
 function updPicker() {
   $("xpn").textContent =
