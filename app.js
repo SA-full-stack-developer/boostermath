@@ -1171,6 +1171,9 @@ $("fs").onchange = () => {
 $("fsq").oninput = () => {
   rebuildFs();
   fsApply();
+  HOLD = null;
+  $("q").value = $("fsq").value;
+  render();
 };
 $("fsn").onclick = () => {
   $("fs").value = "__new__";
