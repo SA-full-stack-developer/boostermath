@@ -1368,3 +1368,24 @@ body.wm #allx {
   gap: 1rem;
   align-items: center;
 }
+
+/* ===== prioridad de favoritos ===== */
+.pr {
+  margin: 4px 0;
+}
+.pr[hidden] {
+  display: none;
+}
+.pr label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--mu);
+}
+.pr input {
+  width: 64px;
+  margin: 0;
+  padding: 3px 6px;
+  text-align: center;
+}

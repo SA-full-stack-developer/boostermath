@@ -1,4 +1,4 @@
-const C = "bm-v11";
+const C = "bm-v12";
 const SHELL = [
   "./",
   "index.html",

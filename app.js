@@ -473,7 +473,11 @@ const tagsOf = (x) => {
   });
   return o;
 };
-let WM = "";
+let WM = "",
+  HOLD = null;
+const keyOf = (x) => (x._d ? x._d.id : "") + "|" + x.n,
+  holdNow = () =>
+    [...$("list").querySelectorAll(".card")].map((c) => c.dataset.k);
 const ST = new Map();
 function useExp(d) {
   if (!ST.has(d.id)) ST.set(d.id, loadState(d));
@@ -500,10 +504,11 @@ function modeItems() {
 }
 function enterMode(m) {
   if (!cur) useExp(EXPS[0]);
+  HOLD = null;
   WM = m;
   document.body.classList.add("wm");
   ST.clear();
-  FL.so = "pbest";
+  FL.so = m === "fav" ? "prio" : "pbest";
   FL.k.clear();
   FL.t.clear();
   FL.f.clear();
@@ -533,6 +538,11 @@ function effBest(x) {
   if (p === null || p === undefined) return null;
   return (p - x.xt) / x.k;
 }
+const prioOf = (x) => {
+  use(x);
+  const v = S.fav[x.n];
+  return typeof v === "number" ? v : v ? 1e9 : 2e9;
+};
 const effPvp = (x) =>
   x.k > 0 && x.pvp !== null && x.pvp !== undefined
     ? (x.pvp - x.xt) / x.k
@@ -550,6 +560,7 @@ const by = (f, d) => (a, b) => {
 const SORTS = {
   best: by(effBest, 1),
   pbest: by(effPvp, 1),
+  prio: (a, b) => prioOf(a) - prioOf(b),
   worst: by(effBest, -1),
   kasc: by((x) => x.k, 1),
   kdesc: by((x) => x.k, -1),
@@ -603,6 +614,7 @@ function buildFilters(P) {
       b.textContent = it.l;
       b.onclick = () => {
         set.has(it.v) ? set.delete(it.v) : set.add(it.v);
+        HOLD = null;
         render();
       };
       g.appendChild(b);
@@ -665,6 +677,7 @@ function buildFilters(P) {
       FL.t.clear();
       FL.f.clear();
       FL.l.clear();
+      HOLD = null;
       render();
     };
     fc.appendChild(b);
@@ -714,7 +727,12 @@ function render() {
       : "\u2705 Extras contados (todos)";
     b.className = "nx" + (allOff ? " on" : "");
   }
-  const A = applyFilters(P, q);
+  let A = applyFilters(P, q);
+  if (HOLD) {
+    const ix = new Map(HOLD.map((k, i) => [k, i])),
+      pos = (x) => (ix.has(keyOf(x)) ? ix.get(keyOf(x)) : 1e9);
+    A = A.slice().sort((a, b) => pos(a) - pos(b));
+  }
   $("cnt").textContent =
     A.length === P.length
       ? P.length + " productos"
@@ -741,6 +759,7 @@ function render() {
       );
     c.className = "card";
     c.dataset.n = x.n;
+    c.dataset.k = keyOf(x);
     c.innerHTML = `
 <div class="top">
   <button class="th" type="button" aria-label="Foto"></button>
@@ -755,6 +774,7 @@ function render() {
   </div>
   <div class="tt"><b class="nm"></b><span class="mt"></span></div>
 </div>
+<div class="pr" hidden><label>⭐ Prioridad<input class="prio" type="number" min="1" step="1" inputmode="numeric" placeholder="—" aria-label="Prioridad (1 = primero)"></label></div>
 <div class="lim"></div>
 <div class="row"><input class="pp" inputmode="decimal" placeholder="Precio € en tienda" aria-label="Precio en tienda"><div class="res">—</div></div>
 <div class="brk"></div>
@@ -837,6 +857,20 @@ function render() {
     c.querySelector(".edp").onclick = () => openEdit(x);
     c.querySelector(".cpy").onclick = () => openMove(x, false);
     c.querySelector(".mov").onclick = () => openMove(x, true);
+    const prw = c.querySelector(".pr"),
+      pri = c.querySelector(".prio");
+    {
+      const v = S.fav[x.n];
+      prw.hidden = !v;
+      pri.value = typeof v === "number" ? v : "";
+    }
+    pri.addEventListener("change", () => {
+      const n = Math.floor(Number(pri.value));
+      S.fav[x.n] = n >= 1 ? n : true;
+      save();
+      HOLD = null;
+      render();
+    });
     const ot = c.querySelector(".obt");
     ot.value = S.obs[x.n] || "";
     c.querySelector(".ob").classList.toggle("has", !!ot.value.trim());
@@ -926,6 +960,7 @@ function render() {
     nx.onclick = () => {
       S.noex[x.n] = !S.noex[x.n];
       save();
+      HOLD = holdNow();
       render();
     };
     const rm = c.querySelector(".rm");
@@ -1207,7 +1242,7 @@ $("fb").onclick = () => {
     ["fav", FKF],
     ["sealed", FKS],
   ].forEach(([k, on]) => {
-    if (on) S[k][n] = true;
+    if (on && !S[k][n]) S[k][n] = true;
   });
   S.finds.push(
     Object.assign(
@@ -1273,8 +1308,12 @@ $("mx").oninput = () => {
     free();
   }
 };
-$("q").oninput = render;
+$("q").oninput = () => {
+  HOLD = null;
+  render();
+};
 $("qr").onclick = () => {
+  HOLD = null;
   $("q").value = "";
   render();
   $("q").focus();
@@ -1287,10 +1326,12 @@ $("allx").onclick = () => {
     else S.noex[x.n] = true;
   });
   save();
+  HOLD = holdNow();
   render();
 };
 $("so").onchange = () => {
   FL.so = $("so").value;
+  HOLD = null;
   render();
 };
 $("fk").oninput = free;
@@ -1772,6 +1813,7 @@ $("xpd").onclick = (e) => {
   if (e.target === $("xpd")) dlgClose($("xpd"));
 };
 function openExp(d) {
+  HOLD = null;
   cur = d;
   S = loadState(d);
   EXP = { name: d.name, dates: d.rel || [] };
