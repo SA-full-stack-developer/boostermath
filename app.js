@@ -1198,7 +1198,15 @@ $("apply").onclick = () => {
   save();
   render();
 };
-$("rs").onclick = () => {
+$("rs").onclick = async () => {
+  if (
+    !(await ask(
+      "Restaurar catálogo",
+      `Se sustituirá el catálogo de «${cur.name}» por el original: perderás los cambios que hayas hecho a mano en él. Tus hallazgos no se tocan.`,
+      "Restaurar",
+    ))
+  )
+    return;
   S.csv = DEF;
   $("csv").value = DEF;
   save();
@@ -1762,6 +1770,22 @@ $("rx").onclick = async () => {
     if (!EXPS.length) EXPS.push(newBlank());
     openExp(EXPS.find((e) => gameOf(e) === meta.game) || EXPS[0]);
   } else openExp(cur);
+};
+$("rw").onclick = async () => {
+  if (
+    !(await ask(
+      "Reiniciar la web",
+      "Se borrarán TODOS los datos de BoosterMath guardados en este navegador: expansiones y juegos propios, hallazgos, fotos, favoritos, noticias, calendario y ajustes. No se puede deshacer. Si quieres conservarlos, pulsa antes «Exportar todo».",
+      "Reiniciar todo",
+    ))
+  )
+    return;
+  try {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith(NS))
+      .forEach((k) => localStorage.removeItem(k));
+  } catch (e) {}
+  location.reload();
 };
 const newBlank = () => ({
   id: "mi-expansion",
