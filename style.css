@@ -902,7 +902,7 @@ footer {
 }
 @media (min-width: 760px) {
   .xg {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
   .xc {
     aspect-ratio: 1 / 1;
