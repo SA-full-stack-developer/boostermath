@@ -152,7 +152,24 @@
 
     <details class="card" id="addbox">
       <summary><b>＋ Añadir hallazgo</b></summary>
-      <select id="fs"></select>
+      <input
+        id="fsq"
+        type="search"
+        placeholder="Buscar producto…"
+        aria-label="Buscar producto"
+        autocomplete="off"
+      />
+      <div class="drow">
+        <select id="fs"></select>
+        <button
+          type="button"
+          id="fsn"
+          title="Crear producto nuevo"
+          aria-label="Crear producto nuevo"
+        >
+          ＋
+        </button>
+      </div>
       <div id="np" hidden>
         <input id="nn" placeholder="Nombre del producto nuevo" /><input
           id="nk"
@@ -177,27 +194,59 @@
         <option>KO</option>
         <option>ZH</option></select
       ><input id="fu" type="url" placeholder="Enlace (opcional)" />
-      <div class="drow">
-        <input
-          id="fim"
-          type="url"
-          placeholder="Foto del producto: enlace (opcional)"
-        /><button type="button" id="fimb">Subir foto</button>
+      <textarea
+        id="fobs"
+        class="obt"
+        rows="2"
+        placeholder="Observaciones del hallazgo (opcional)"
+        aria-label="Observaciones del hallazgo"
+      ></textarea>
+      <div id="fimbox" hidden>
+        <div class="drow">
+          <input
+            id="fim"
+            type="url"
+            placeholder="Foto del producto: enlace (opcional)"
+          /><button type="button" id="fimb">Subir foto</button>
+        </div>
+        <input id="fimf" type="file" accept="image/*" hidden />
+        <p class="hint" id="fimh"></p>
       </div>
-      <input id="fimf" type="file" accept="image/*" hidden />
-      <p class="hint" id="fimh"></p>
-      <button type="button" id="fa" style="width: 100%">
-        &#9989; Disponible
-      </button>
+      <div class="drow fmk">
+        <button type="button" id="fa">&#9989; Disponible</button>
+        <button
+          type="button"
+          id="fkw"
+          class="mk"
+          title="Marcar como deseado (wishlist)"
+          aria-label="Deseado"
+        >
+          ❤️
+        </button>
+        <button
+          type="button"
+          id="fkf"
+          class="mk"
+          title="Marcar como favorito"
+          aria-label="Favorito"
+        >
+          ⭐
+        </button>
+        <button
+          type="button"
+          id="fks"
+          class="mk"
+          title="Marcar como sin abrir (📦)"
+          aria-label="Sin abrir"
+        >
+          📦
+        </button>
+      </div>
       <div class="btns">
         <button id="fb">Añadir</button
         ><button type="button" id="fclr">🧹 Limpiar</button>
       </div>
     </details>
-    <section id="favs" hidden>
-      <h2>⭐ Favoritos</h2>
-      <div id="fav" class="cards"></div>
-    </section>
     <div class="flex">
       <input
         id="q"
@@ -410,6 +459,9 @@
       <input id="gmf" type="file" accept="image/*" hidden />
       <p class="hint" id="gmh"></p>
       <button type="button" id="gmr" class="clr" hidden>Quitar imagen</button>
+      <button type="button" id="gmz" class="clr" hidden>
+        Restaurar juegos ocultos
+      </button>
       <div class="btns">
         <button type="button" id="gmc" class="pri">Crear juego</button>
       </div>
@@ -454,14 +506,27 @@
         ><button type="button" id="mvx" class="x" aria-label="Cerrar">✕</button>
       </div>
       <p class="hint" id="mvp"></p>
-      <div class="pgh">Destino (serie y colección)</div>
+      <div class="pgh">Juego de destino</div>
+      <select id="mvg"></select>
+      <div class="pgh">Colección de destino</div>
       <select id="mvs"></select>
+      <input id="mvn" placeholder="Nombre de la nueva colección" hidden />
       <p class="hint" id="mvm"></p>
       <div class="btns">
         <button type="button" id="mvc">Cancelar</button>
         <button type="button" id="mvy" class="pri">Mover</button>
       </div>
     </dialog>
+
+    <dialog id="imd" aria-label="Imagen del producto">
+      <img id="imb" alt="" />
+    </dialog>
+    <input
+      id="gimf"
+      type="file"
+      accept=".json,application/json,text/plain"
+      hidden
+    />
 
     <dialog id="ck" aria-label="Aviso de almacenamiento">
       <div class="dh"><b>🍪 Almacenamiento y cookies</b></div>
