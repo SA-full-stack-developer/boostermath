@@ -61,7 +61,7 @@ El botón 📅 abre el calendario del mes: los días con salidas llevan un punto
 [{ "d": "2026-11-06", "t": "Dominio Delta · ETB 9 sobres", "c": "#16a34a" }]
 ```
 
-- `d`: fecha `AAAA-MM-DD`; `t`: título; `c`: color del punto (una expansión = un color: el 30.º aniversario va en dorado `#d0b011` y Dominio Delta en verde `#16a34a`).
+- `d`: fecha `AAAA-MM-DD`; `t`: título; `c`: color del punto (una expansión = un color: el 30.º aniversario va en dorado `#d0b011`, Dominio Delta en verde `#16a34a`, Oscuridad Absoluta en morado `#7c3aed` y Flowing Fists en azul `#0ea5e9`).
 - Las que añadas desde la web se guardan solo en tu navegador, y las del servidor se pueden ocultar desde el propio calendario.
 - Cuando cambies fechas en el catálogo de una expansión, actualiza también sus entradas aquí.
 
@@ -81,7 +81,7 @@ Los formatos válidos son `webp` (recomendado), `png`, `jpg`, `jpeg`, `avif`, `g
 
 **Foto de producto.** Orden de búsqueda:
 
-1. El enlace del producto (campo «URL de la foto» en Detalles, o la 8.ª columna del catálogo) o una foto subida desde el navegador.
+1. El enlace del producto (campo «URL de la foto» en Detalles, o la 8.ª columna del catálogo) o una foto subida desde el navegador. Con la 8.ª columna del `csv` de `data/<expansion>.json` el catálogo del servidor ya lleva la imagen enlazada, sin alojar ni renombrar ficheros (si la web de origen no permite usar la imagen desde otra página, no se verá y se usa el siguiente paso).
 2. `assets/productos/<id-expansion>/<nombre>.<ext>`.
 3. `assets/default-product.png`.
 4. Un icono 📷 si no hay nada.

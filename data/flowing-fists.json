@@ -1,0 +1,28 @@
+{
+ "v": 3,
+ "id": "flowing-fists",
+ "name": "Megaevolución: Flowing Fists (Aura Seeker, M7)",
+ "q": "Pokemon Flowing Fists",
+ "rel": [
+  [
+   "Japón",
+   "2026-11-27"
+  ]
+ ],
+ "rev": 1,
+ "ok": 6,
+ "mx": 7.5,
+ "fx": {
+  "CNY": 7.524,
+  "JPY": 177.58,
+  "KRW": 1499.01,
+  "TWD": 36.8,
+  "HKD": 8.8316
+ },
+ "fxNote": "CNY, HKD y KRW: referencia BCE del 16/10/2026. JPY y TWD: aproximados (mercado, mediados de octubre). Editables.",
+ "csv": "# nombre;sobres;pvp;extras (descripcion:valor|descripcion:valor);origen;idioma;fecha(AAAA-MM-DD)\n# Con 0 sobres el producto es solo referencia: se compara contra su PVP en euros\n# --- Japón (Aura Seeker, M7) ---\nCaja 30 sobres JP;30;6000 JPY;;200 yenes por sobre (5 cartas), caja de 30 sobres. Aura Seeker es la versión japonesa de Flowing Fists;JP;2026-11-27",
+ "finds": [],
+ "noex": {},
+ "dates": {},
+ "serie": "Megaevolución"
+}
