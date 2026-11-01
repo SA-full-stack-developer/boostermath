@@ -1389,3 +1389,13 @@ body.wm #allx {
   padding: 3px 6px;
   text-align: center;
 }
+
+/* ===== botón de café (PayPal) ===== */
+a.ins {
+  display: inline-block;
+  text-decoration: none;
+  cursor: pointer;
+  color: var(--tx);
+  border: 1px solid var(--bd);
+  background: var(--card);
+}

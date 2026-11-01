@@ -473,6 +473,8 @@ const tagsOf = (x) => {
   });
   return o;
 };
+const PAYPAL_URL = ""; // enlace de PayPal.me para el botón ☕
+const MK = { fav: "fav", wish: "wish", own: "sealed" };
 let WM = "",
   HOLD = null;
 const keyOf = (x) => (x._d ? x._d.id : "") + "|" + x.n,
@@ -494,7 +496,7 @@ function modeItems() {
   EXPS.forEach((d) => {
     useExp(d);
     parse().forEach((x) => {
-      if (S[WM === "fav" ? "fav" : "wish"][x.n]) {
+      if (S[MK[WM]][x.n]) {
         x._d = d;
         out.push(x);
       }
@@ -744,7 +746,9 @@ function render() {
       WM && !P.length
         ? WM === "fav"
           ? "Todavía no tienes favoritos: marca la ⭐ en cualquier producto."
-          : "Todavía no tienes productos deseados: marca el ❤️ en cualquier producto."
+          : WM === "own"
+            ? "Todavía no tienes productos obtenidos: marca el 📦 en cualquier producto."
+            : "Todavía no tienes productos deseados: marca el ❤️ en cualquier producto."
         : P.length
           ? "Ning\u00fan producto coincide con la b\u00fasqueda o los filtros."
           : "Esta expansi\u00f3n no tiene productos todav\u00eda. A\u00f1\u00e1delos en el cat\u00e1logo o con \u00abA\u00f1adir hallazgo\u00bb.";
@@ -1654,6 +1658,7 @@ function buildGames() {
   [
     ["fav", "⭐ Favoritos"],
     ["wish", "💖 Wishlist"],
+    ["own", "📦 Obtenidos"],
   ].forEach(([m, t]) => {
     const w = document.createElement("button");
     w.type = "button";
@@ -1666,7 +1671,8 @@ function buildGames() {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "gp" + (!WM && x.id === meta.game ? " on" : "");
-    const lbl = (x.icon ? x.icon + " " : "") + x.name;
+    const ico = x.name.trim().toLowerCase() === "deseados" ? "🪄" : x.icon,
+      lbl = (ico ? ico + " " : "") + x.name;
     if (x.img) {
       const im = document.createElement("img");
       im.src = x.img;
@@ -2194,6 +2200,10 @@ const calToday = () => {
   drawCal();
 };
 $("calh").onclick = calToday;
+if (PAYPAL_URL) {
+  $("cafe").href = PAYPAL_URL;
+  $("cafe").hidden = false;
+}
 $("calb").onclick = () => {
   calToday();
   dlgOpen($("cald"));
@@ -2782,7 +2792,7 @@ function clearMarks(key) {
 async function removeGame() {
   if (WM) {
     const key = WM,
-      lbl = key === "fav" ? "Favoritos" : "Wishlist";
+      lbl = { fav: "Favoritos", wish: "Wishlist", own: "Obtenidos" }[key];
     if (
       !(await ask(
         "Vaciar " + lbl,
@@ -2791,7 +2801,7 @@ async function removeGame() {
       ))
     )
       return;
-    clearMarks(key);
+    clearMarks(MK[key]);
     return;
   }
   if (GAMES.length <= 1) {
@@ -2825,7 +2835,7 @@ async function exportGame() {
   if (WM || !g) {
     await ask(
       "Exportar juego",
-      "Elige primero un juego (no Favoritos ni Wishlist).",
+      "Elige primero un juego (no Favoritos, Wishlist ni Obtenidos).",
       "Entendido",
       true,
     );

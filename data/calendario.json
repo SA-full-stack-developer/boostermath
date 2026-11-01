@@ -10,9 +10,34 @@
     "c": "#d0b011"
   },
   {
-    "d": "2026-01-30",
-    "t": "30.º aniversario · Caja Pokémon Day 2026 Special Collection",
-    "c": "#d0b011"
+    "d": "2026-07-31",
+    "t": "Dominio Delta · Caja 30 sobres JP",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-07-31",
+    "t": "Dominio Delta · Starter Set ex JP (3 versiones)",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-08-07",
+    "t": "Dominio Delta · Caja 30 sobres TW/HK",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-08-07",
+    "t": "Dominio Delta · 10 sobres PLUS TW/HK",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-08-07",
+    "t": "Dominio Delta · Pack Compañero Mega TW/HK",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-08-21",
+    "t": "Dominio Delta · Caja 30 sobres KR",
+    "c": "#16a34a"
   },
   {
     "d": "2026-09-16",
@@ -79,7 +104,11 @@
     "t": "30.º aniversario · ETB Pokémon Center 11 sobres",
     "c": "#d0b011"
   },
-  { "d": "2026-09-16", "t": "30.º aniversario · ETB 9 sobres", "c": "#d0b011" },
+  {
+    "d": "2026-09-16",
+    "t": "30.º aniversario · ETB 9 sobres",
+    "c": "#d0b011"
+  },
   {
     "d": "2026-09-16",
     "t": "30.º aniversario · Premium Deck Set Espeon+Umbreon JP",
@@ -126,6 +155,11 @@
     "c": "#d0b011"
   },
   {
+    "d": "2026-10-24",
+    "t": "Dominio Delta · Caja Combina y Combate 4 sobres (prelanzamiento)",
+    "c": "#16a34a"
+  },
+  {
     "d": "2026-10-30",
     "t": "30.º aniversario · Mazo de Combate Espeon o Umbreon ex",
     "c": "#d0b011"
@@ -144,5 +178,45 @@
     "d": "2026-11-06",
     "t": "30.º aniversario · Ultra-Premium Día/Noche 29 sobres",
     "c": "#d0b011"
+  },
+  {
+    "d": "2026-11-06",
+    "t": "Dominio Delta · Blíster 1 sobre (Spritzee)",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-11-06",
+    "t": "Dominio Delta · Blíster 3 sobres (Seel)",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-11-06",
+    "t": "Dominio Delta · Booster Bundle 6 sobres",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-11-06",
+    "t": "Dominio Delta · ETB 9 sobres",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-11-06",
+    "t": "Dominio Delta · ETB Pokémon Center 11 sobres",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-11-06",
+    "t": "Dominio Delta · Media caja 18 sobres",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2026-11-06",
+    "t": "Dominio Delta · Caja 36 sobres",
+    "c": "#16a34a"
+  },
+  {
+    "d": "2027-02-12",
+    "t": "Dominio Delta · Mega Rayquaza ex Premium Tournament Collection (Dragon Shield)",
+    "c": "#16a34a"
   }
 ]

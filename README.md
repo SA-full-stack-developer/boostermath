@@ -21,17 +21,20 @@ assets/juegos/                       <- logos de las pestañas de juego (opciona
 assets/expansiones/<id>.<ext>        <- logo de cada expansión (tarjeta del selector)
 assets/productos/<id>/<nombre>.<ext> <- foto de cada producto
 data/games.json                      <- lista de juegos y de sus expansiones
-data/<expansion>.json                <- una por expansión
+data/<expansion>.json                <- una por expansión (el catálogo de productos vive aquí)
+data/calendario.json                 <- fechas de salida del calendario (ver «Calendario»)
+data/noticias.json                   <- webs de noticias del desplegable
 nombres-imagenes.js                  <- script que lista cómo nombrar las fotos
 ```
 
 ## Cómo se usa
 
-1. **Elige juego y expansión.** Las pestañas son los juegos; el botón de debajo abre el selector de expansiones, que muestra tarjetas con logo, nombre y fecha (2 columnas en móvil, 5 en escritorio). Si un juego no tiene expansiones, la lista queda vacía hasta que crees una con «＋ Nueva expansión».
-2. **Escribe el precio** que ves en una tienda en la ficha del producto. Te dice si es **Compra** (verde), **Aceptable** (ámbar) o **Caro** (rojo).
-3. **Guarda hallazgos** (tienda, idioma, precio y enlace) para comparar y ver cómo cambian. Cada hallazgo se puede marcar como disponible (✅) o no (🚫) y editar (✏️).
-4. **Marca 📦** los productos que tienes sin abrir (solo informativo) y usa **filtros y orden** para encontrar lo mejor.
-5. **Exporta tus datos** de vez en cuando.
+1. **Elige una vista o un juego.** La barra de arriba tiene tres vistas que reúnen productos de **todos los juegos y expansiones**: **⭐ Favoritos** (ordenados por prioridad), **💖 Wishlist** (los marcados con ❤️) y **📦 Obtenidos** (los marcados con 📦, los que ya tienes). Después van las pestañas de juego. En cada vista, el botón − vacía sus marcas (los productos no se borran).
+2. **Elige juego y expansión.** Las pestañas son los juegos; el botón de debajo abre el selector de expansiones, que muestra tarjetas con logo, nombre y fecha (2 columnas en móvil, 5 en escritorio). Si un juego no tiene expansiones, la lista queda vacía hasta que crees una con «＋ Nueva expansión».
+3. **Escribe el precio** que ves en una tienda en la ficha del producto. Te dice si es **Compra** (verde), **Aceptable** (ámbar) o **Caro** (rojo).
+4. **Guarda hallazgos** (tienda, idioma, precio y enlace) para comparar y ver cómo cambian. Cada hallazgo se puede marcar como disponible (✅) o no (🚫) y editar (✏️).
+5. **Marca 📦** los productos que tienes sin abrir (solo informativo; aparecen en la vista **📦 Obtenidos**) y usa **filtros y orden** para encontrar lo mejor.
+6. **Exporta tus datos** de vez en cuando.
 
 ### La ficha de producto
 
@@ -49,6 +52,28 @@ Con los umbrales **Ideal** y **Máximo** (€/sobre) se calcula `(precio − ext
 - **Rojo** por encima del Máximo.
 
 Los productos con **0 sobres** son solo referencia: se comparan con su PVP en euros (verde hasta +10 %, ámbar hasta +30 %, rojo por encima) y la ficha muestra el PVP.
+
+## Calendario
+
+El botón 📅 abre el calendario del mes: los días con salidas llevan un punto y, al elegir un día, se listan sus entradas. Las entradas del servidor están en `data/calendario.json`, una por producto con fecha:
+
+```json
+[{ "d": "2026-11-06", "t": "Dominio Delta · ETB 9 sobres", "c": "#16a34a" }]
+```
+
+- `d`: fecha `AAAA-MM-DD`; `t`: título; `c`: color del punto (una expansión = un color: el 30.º aniversario va en dorado `#d0b011` y Dominio Delta en verde `#16a34a`).
+- Las que añadas desde la web se guardan solo en tu navegador, y las del servidor se pueden ocultar desde el propio calendario.
+- Cuando cambies fechas en el catálogo de una expansión, actualiza también sus entradas aquí.
+
+## Botón de café (PayPal)
+
+En la esquina superior derecha, junto al calendario, hay un botón **☕ Café**. Está oculto hasta que pongas tu enlace de PayPal en la primera constante de `app.js`:
+
+```js
+const PAYPAL_URL = "https://www.paypal.com/paypalme/TU_USUARIO";
+```
+
+Con la constante vacía el botón no se muestra. Después sube la versión de `sw.js`.
 
 ## Imágenes
 
@@ -89,9 +114,9 @@ Abrir `index.html` con doble clic no funciona: el navegador bloquea `fetch()` de
 Cosas a tener en cuenta:
 
 - **Brave** bloquea JS por defecto con Shields: da la excepción también a `localhost`.
-- **Service worker:** si cambias algo y no lo ves, es la caché. En DevTools → _Application_ → _Service Workers_ marca **Update on reload**, o pulsa _Unregister_. Al publicar cambios, sube también el número de versión de `sw.js` (`const C="bm-v3"`) para que los visitantes reciban la versión nueva.
+- **Service worker:** si cambias algo y no lo ves, es la caché. En DevTools → _Application_ → _Service Workers_ marca **Update on reload**, o pulsa _Unregister_. Al publicar cambios, sube también el número de versión de `sw.js` (`const C = "bm-v14"`, y así en cada entrega) para que los visitantes reciban la versión nueva.
 - **Datos separados:** el `localStorage` es por origen y por puerto. `localhost:5500` y `github.io` guardan datos distintos; usa siempre el mismo puerto y pasa tus datos entre ellos con Exportar / Importar.
-- **Cambios en el JSON del servidor:** lo que ya estaba guardado en tu navegador no se actualiza solo. Para ver un catálogo o unos hallazgos nuevos del repositorio, pulsa **Restablecer expansión** (y luego **Importar** tus datos si los tenías).
+- **Cambios en el JSON del servidor:** los productos (catálogo, fechas, PVP y extras) viven en `data/<expansion>.json`, mientras que los hallazgos, marcas y fotos viven en el navegador. Lo que ya estaba guardado en tu navegador no se actualiza solo: para ver un catálogo nuevo del repositorio pulsa **Restablecer expansión** (y luego **Importar** tus hallazgos y marcas si los tenías). Al importar un export, el catálogo del archivo reemplaza al del navegador.
 
 ## Añadir un juego
 
