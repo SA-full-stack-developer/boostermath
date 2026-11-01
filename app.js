@@ -62,6 +62,7 @@ if (!Array.isArray(meta.recent)) meta.recent = [];
 if (!Array.isArray(meta.games)) meta.games = [];
 if (!meta.gameOv || typeof meta.gameOv !== "object") meta.gameOv = {};
 if (!Array.isArray(meta.hiddenGames)) meta.hiddenGames = [];
+if (!meta.expOv || typeof meta.expOv !== "object") meta.expOv = {};
 const ui = LS.get("ui") || {};
 const saveUi = () => LS.set("ui", ui);
 let GAMES = [];
@@ -735,6 +736,12 @@ function render() {
       pos = (x) => (ix.has(keyOf(x)) ? ix.get(keyOf(x)) : 1e9);
     A = A.slice().sort((a, b) => pos(a) - pos(b));
   }
+  if (WM === "own") {
+    const gi = new Map(EXPS.map((d, i) => [d.id, i]));
+    A = A.map((x, i) => [x, i])
+      .sort((a, b) => gi.get(a[0]._d.id) - gi.get(b[0]._d.id) || a[1] - b[1])
+      .map((z) => z[0]);
+  }
   $("cnt").textContent =
     A.length === P.length
       ? P.length + " productos"
@@ -1017,7 +1024,17 @@ function render() {
     paint(x, c);
     finds(x, c);
   };
-  A.forEach((x) => build(x, L));
+  let lastG = null;
+  A.forEach((x) => {
+    if (WM === "own" && x._d.id !== lastG) {
+      lastG = x._d.id;
+      const h = document.createElement("div");
+      h.className = "gh";
+      h.textContent = x._d.name;
+      L.appendChild(h);
+    }
+    build(x, L);
+  });
   window.scrollTo(0, sy);
 }
 let phT = null;
@@ -1384,7 +1401,7 @@ const packOne = (d, s, wi) => {
     fav: s.fav,
     wish: s.wish,
     obs: s.obs,
-    logo: d.custom ? d.logo || "" : undefined,
+    logo: d.logo || (d.custom ? "" : undefined),
     gameDef: gd
       ? { id: gd.id, name: gd.name, icon: gd.icon || "", img: gd.img || "" }
       : undefined,
@@ -1527,6 +1544,7 @@ function importExp(o) {
       LS.set("meta", meta);
     }
   } else d = cur;
+  if (o.id && d && d.id === o.id) adoptExpInfo(d, o);
   const s = getState(d);
   if (num(o.ok)) s.ok = num(o.ok);
   if (num(o.mx)) s.mx = num(o.mx);
@@ -1629,6 +1647,31 @@ const dlgClose = (d) => {
     d.removeAttribute("open");
   }
 };
+/* Cierra una modal solo si el clic EMPIEZA y TERMINA fuera de su caja
+   (el relleno interior y arrastrar para seleccionar texto no la cierran). */
+const outsideDlg = (d, e) => {
+  const r = d.getBoundingClientRect();
+  return (
+    e.clientX < r.left ||
+    e.clientX > r.right ||
+    e.clientY < r.top ||
+    e.clientY > r.bottom
+  );
+};
+function closeOutside(d, fn) {
+  d._co = fn;
+  if (d._cob) return;
+  d._cob = true;
+  let down = false;
+  d.addEventListener("pointerdown", (e) => {
+    down = e.target === d && outsideDlg(d, e);
+  });
+  d.addEventListener("click", (e) => {
+    const go = down && e.target === d && outsideDlg(d, e);
+    down = false;
+    if (go && d._co) d._co();
+  });
+}
 function emptyGame(id) {
   cur = null;
   meta.game = id;
@@ -1818,9 +1861,7 @@ $("xpb").onclick = () => {
 };
 $("xps").oninput = fillPicker;
 $("xpx").onclick = () => dlgClose($("xpd"));
-$("xpd").onclick = (e) => {
-  if (e.target === $("xpd")) dlgClose($("xpd"));
-};
+closeOutside($("xpd"), () => dlgClose($("xpd")));
 function openExp(d) {
   HOLD = null;
   cur = d;
@@ -1920,6 +1961,136 @@ $("nxc").onclick = () => {
   NXI = "";
   dlgClose($("xpd"));
   openExp(d);
+};
+/* ===== Editar expansión ===== */
+function applyExpOv(d, o) {
+  if (o.name) d.name = o.name;
+  if (typeof o.serie === "string") d.serie = o.serie;
+  d.logo = o.logo || d._ol;
+  if (Array.isArray(o.rel)) d.rel = o.rel;
+}
+function setExpInfo(d, o) {
+  if (d.custom) {
+    Object.assign(d, o);
+    const c = meta.custom.find((z) => z.id === d.id);
+    if (c && c !== d) Object.assign(c, o);
+  } else {
+    meta.expOv[d.id] = o;
+    applyExpOv(d, o);
+  }
+  LS.set("meta", meta);
+}
+function adoptExpInfo(d, o) {
+  const x = {
+    name: d.name,
+    serie: d.serie || "",
+    logo: d.logo || "",
+    rel: d.rel || [],
+  };
+  let ch = false;
+  if (o.name && String(o.name) !== x.name)
+    ((x.name = String(o.name)), (ch = true));
+  if (typeof o.serie === "string" && o.serie !== x.serie)
+    ((x.serie = o.serie), (ch = true));
+  if (/^(https?:\/\/|data:image\/)/.test(o.logo || "") && o.logo !== x.logo)
+    ((x.logo = o.logo), (ch = true));
+  if (Array.isArray(o.rel)) {
+    const r = o.rel
+      .filter((z) => Array.isArray(z) && z.length >= 2)
+      .map((z) => [String(z[0]), String(z[1])]);
+    if (JSON.stringify(r) !== JSON.stringify(x.rel)) ((x.rel = r), (ch = true));
+  }
+  if (ch) {
+    setExpInfo(d, x);
+    EXP = { name: d.name, dates: d.rel || [] };
+  }
+}
+let EXI = "";
+function openExpDlg() {
+  if (!cur) return;
+  $("exn").value = cur.name;
+  $("exs").value = cur.serie || "";
+  $("exr").value = (cur.rel || []).map((r) => r[0] + ": " + r[1]).join("\n");
+  EXI = /^data:image\//.test(cur.logo || "") ? cur.logo : "";
+  $("exi").value = /^https?:\/\//.test(cur.logo || "") ? cur.logo : "";
+  $("exh").textContent = EXI
+    ? "Imagen subida conservada. Para sustituirla pega un enlace o sube otra."
+    : "";
+  $("exz").hidden = !!cur.custom || !meta.expOv[cur.id];
+  dlgOpen($("exd"));
+  $("exn").focus();
+}
+$("xed").onclick = openExpDlg;
+$("exx").onclick = () => dlgClose($("exd"));
+$("exc").onclick = () => dlgClose($("exd"));
+closeOutside($("exd"), () => dlgClose($("exd")));
+$("exb").onclick = () => $("exf").click();
+$("exf").onchange = (e) => {
+  const fl = e.target.files[0];
+  e.target.value = "";
+  if (!fl) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const r = Math.min(1, 240 / Math.max(img.width, img.height)),
+        cv = document.createElement("canvas");
+      cv.width = Math.round(img.width * r);
+      cv.height = Math.round(img.height * r);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      EXI = cv.toDataURL("image/webp", 0.85);
+      $("exi").value = "";
+      $("exh").textContent =
+        "Imagen adjuntada ✓ (solo se guarda en este navegador; para que la vea todo el mundo usa un enlace).";
+    };
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(fl);
+};
+$("exg").onclick = () => {
+  const nm = $("exn")
+    .value.trim()
+    .replace(/[;|\n]/g, " ");
+  if (!nm) {
+    $("exh").textContent = "Escribe un nombre.";
+    return;
+  }
+  const rel = [];
+  let bad = "";
+  $("exr")
+    .value.split("\n")
+    .forEach((l) => {
+      l = l.trim();
+      if (!l) return;
+      const m = l.match(/^(.+?)\s*[:;=]\s*(\d{4}-\d{2}-\d{2})$/);
+      if (m) rel.push([m[1].replace(/[;|]/g, " "), m[2]]);
+      else if (!bad) bad = l;
+    });
+  if (bad) {
+    $("exh").textContent =
+      "Fecha no válida en «" + bad + "». Usa el formato Región: AAAA-MM-DD.";
+    return;
+  }
+  const u = $("exi").value.trim();
+  if (u && !/^https?:\/\//.test(u)) {
+    $("exh").textContent = "El enlace de la imagen debe empezar por https://";
+    return;
+  }
+  setExpInfo(cur, {
+    name: nm,
+    serie: $("exs")
+      .value.trim()
+      .replace(/[;|\n]/g, " "),
+    logo: u || EXI,
+    rel,
+  });
+  dlgClose($("exd"));
+  openExp(cur);
+};
+$("exz").onclick = () => {
+  delete meta.expOv[cur.id];
+  LS.set("meta", meta);
+  location.reload();
 };
 $("rx").onclick = async () => {
   const own = !!cur.custom;
@@ -2209,9 +2380,7 @@ $("calb").onclick = () => {
   dlgOpen($("cald"));
 };
 $("calx").onclick = () => dlgClose($("cald"));
-$("cald").onclick = (e) => {
-  if (e.target === $("cald")) dlgClose($("cald"));
-};
+closeOutside($("cald"), () => dlgClose($("cald")));
 $("caa").onclick = () => {
   const d = $("cad").value,
     t = $("cat").value.trim();
@@ -2261,7 +2430,7 @@ function ask(title, text, okLabel, safe) {
       if (done) return;
       done = true;
       d.onclose = null;
-      d.onclick = null;
+      d._co = null;
       dlgClose(d);
       res(v);
     };
@@ -2272,9 +2441,7 @@ function ask(title, text, okLabel, safe) {
     $("cfy").onclick = () => end(true);
     $("cfn").onclick = () => end(false);
     d.onclose = () => end(false);
-    d.onclick = (e) => {
-      if (e.target === d) end(false);
-    };
+    closeOutside(d, () => end(false));
     dlgOpen(d);
     $("cfn").focus();
   });
@@ -2448,9 +2615,7 @@ $("gmr").onclick = () => {
   $("gmh").textContent = "La imagen se quitará al guardar.";
 };
 $("gmx").onclick = () => dlgClose($("gmd"));
-$("gmd").onclick = (e) => {
-  if (e.target === $("gmd")) dlgClose($("gmd"));
-};
+closeOutside($("gmd"), () => dlgClose($("gmd")));
 $("gmb").onclick = () => $("gmf").click();
 $("gmf").onchange = (e) => {
   const fl = e.target.files[0];
@@ -2585,9 +2750,7 @@ $("epx").onclick = $("epc").onclick = () => {
   EPX = null;
   dlgClose($("epd"));
 };
-$("epd").onclick = (e) => {
-  if (e.target === $("epd")) $("epx").onclick();
-};
+closeOutside($("epd"), () => $("epx").onclick());
 $("eps").onclick = () => {
   if (!EPX) return;
   const clean = (v) =>
@@ -2718,9 +2881,7 @@ $("mvx").onclick = $("mvc").onclick = () => {
   MVX = null;
   dlgClose($("mvd"));
 };
-$("mvd").onclick = (e) => {
-  if (e.target === $("mvd")) $("mvx").onclick();
-};
+closeOutside($("mvd"), () => $("mvx").onclick());
 $("mvy").onclick = () => {
   if (!MVX) return;
   const n = MVX.n,
@@ -2963,6 +3124,10 @@ async function init() {
   meta.custom.forEach((c) => {
     if (!EXPS.some((e) => e.id === c.id))
       EXPS.push(Object.assign({}, c, { custom: true }));
+  });
+  EXPS.forEach((d) => {
+    d._ol = d.logo;
+    if (!d.custom && meta.expOv[d.id]) applyExpOv(d, meta.expOv[d.id]);
   });
   if (!meta.game || !GAMES.some((g) => g.id === meta.game))
     meta.game = GAMES[0].id;

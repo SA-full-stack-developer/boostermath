@@ -1399,3 +1399,35 @@ a.ins {
   border: 1px solid var(--bd);
   background: var(--card);
 }
+
+/* ===== editar expansión y grupos de Obtenidos ===== */
+.pkw {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.pkw .picker {
+  flex: 1;
+  min-width: 0;
+}
+.pkw .xed {
+  margin: 1rem 0;
+  width: auto;
+  white-space: nowrap;
+  padding: 1rem 1.5rem;
+}
+body.wm .pkw {
+  display: none;
+}
+.cards .gh {
+  grid-column: 1 / -1;
+  color: var(--mu);
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--bd);
+  padding-bottom: 6px;
+  margin-top: 0.5rem;
+}
+.cards .gh:first-child {
+  margin-top: 0;
+}

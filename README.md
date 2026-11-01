@@ -29,7 +29,7 @@ nombres-imagenes.js                  <- script que lista cómo nombrar las fotos
 
 ## Cómo se usa
 
-1. **Elige una vista o un juego.** La barra de arriba tiene tres vistas que reúnen productos de **todos los juegos y expansiones**: **⭐ Favoritos** (ordenados por prioridad), **💖 Wishlist** (los marcados con ❤️) y **📦 Obtenidos** (los marcados con 📦, los que ya tienes). Después van las pestañas de juego. En cada vista, el botón − vacía sus marcas (los productos no se borran).
+1. **Elige una vista o un juego.** La barra de arriba tiene tres vistas que reúnen productos de **todos los juegos y expansiones**: **⭐ Favoritos** (ordenados por prioridad), **💖 Wishlist** (los marcados con ❤️) y **📦 Obtenidos** (los marcados con 📦, los que ya tienes, agrupados por colección: cada una lleva su nombre en gris con una línea separadora). Después van las pestañas de juego. En cada vista, el botón − vacía sus marcas (los productos no se borran).
 2. **Elige juego y expansión.** Las pestañas son los juegos; el botón de debajo abre el selector de expansiones, que muestra tarjetas con logo, nombre y fecha (2 columnas en móvil, 5 en escritorio). Si un juego no tiene expansiones, la lista queda vacía hasta que crees una con «＋ Nueva expansión».
 3. **Escribe el precio** que ves en una tienda en la ficha del producto. Te dice si es **Compra** (verde), **Aceptable** (ámbar) o **Caro** (rojo).
 4. **Guarda hallazgos** (tienda, idioma, precio y enlace) para comparar y ver cómo cambian. Cada hallazgo se puede marcar como disponible (✅) o no (🚫) y editar (✏️).
@@ -94,7 +94,7 @@ node nombres-imagenes.js
 
 Imprime los nombres y los guarda en `nombres-imagenes.txt`. Si cambias el nombre de un producto en el catálogo, renombra también su imagen.
 
-**Logo de expansión.** `assets/expansiones/<id>.<ext>` (por ejemplo `dominio-delta.webp`), o un campo `logo` en el JSON de la expansión con la ruta. Si no existe, la tarjeta muestra 🃏.
+**Logo de expansión.** `assets/expansiones/<id>.<ext>` (por ejemplo `dominio-delta.webp`), o un campo `logo` en el JSON de la expansión con la ruta o con un **enlace https** (`"logo": "https://…"`): así lo ve todo el mundo sin subir ficheros. Desde la web, el botón **✏️ Editar** (junto al selector de expansión) permite cambiar nombre, serie, fechas de salida e imagen; para una expansión del servidor los cambios se guardan en tu navegador (con «Restaurar datos originales» vuelve a la del servidor) y se incluyen al exportar, de modo que puedes copiar el enlace de imagen al `logo` del JSON. Si no existe, la tarjeta muestra 🃏.
 
 **Logo de juego.** Campo `img` en `games.json` (ver más abajo). Si falla, vuelve al icono y el nombre.
 
@@ -181,6 +181,7 @@ Los paneles «Catálogo de la expansión» y «Tipos de cambio» están ocultos 
 
 - **Exportar** baja la expansión abierta; **Exportar todo**, todas las que tengan datos. El formato actual es v3 (con `id`, `game`, `serie` e `imgUrl`).
 - **Importar** fusiona los hallazgos y reemplaza el resto; si el archivo trae una expansión nueva, la crea. También admite los exports antiguos v2 de los comparadores de un solo HTML (se importan en la expansión abierta).
+- Las ventanas (selector, calendario, editar producto…) solo se cierran con la ✕, con Cancelar o haciendo clic fuera de la ventana; un clic en su margen interior o arrastrar para seleccionar texto no las cierra.
 - «Incluir fotos subidas» añade las fotos subidas desde el navegador (pesa más).
 
 ## Instalar como app

@@ -118,10 +118,15 @@
     </div>
 
     <nav class="games" id="games" aria-label="Juego"></nav>
-    <button type="button" id="xpb" class="picker" aria-haspopup="dialog">
-      <span><b id="xpn">—</b><small id="xps2"></small></span
-      ><span aria-hidden="true">▾</span>
-    </button>
+    <div class="pkw">
+      <button type="button" id="xpb" class="picker" aria-haspopup="dialog">
+        <span><b id="xpn">—</b><small id="xps2"></small></span
+        ><span aria-hidden="true">▾</span>
+      </button>
+      <button type="button" id="xed" class="xed" title="Editar expansión">
+        ✏️ Editar
+      </button>
+    </div>
     <div class="ld" id="ld" hidden></div>
     <div class="warn" id="warn" hidden></div>
     <div id="hd"></div>
@@ -407,6 +412,39 @@
         </div>
         <input id="nxf" type="file" accept="image/*" hidden />
         <p class="hint" id="nxh"></p>
+      </div>
+    </dialog>
+
+    <dialog id="exd" aria-label="Editar expansión">
+      <div class="dh">
+        <b>✏️ Editar expansión</b
+        ><button type="button" id="exx" class="x" aria-label="Cerrar">✕</button>
+      </div>
+      <label>Nombre<input id="exn" autocomplete="off" /></label>
+      <label>Serie<input id="exs" autocomplete="off" /></label>
+      <label
+        >Fechas de salida (una por línea: Región: AAAA-MM-DD)
+        <textarea id="exr" rows="4" spellcheck="false"></textarea>
+      </label>
+      <div class="pgh">
+        Imagen de la expansión (un enlace https la verá todo el mundo)
+      </div>
+      <div class="drow">
+        <input id="exi" type="url" placeholder="Enlace de imagen" /><button
+          type="button"
+          id="exb"
+        >
+          Subir imagen
+        </button>
+      </div>
+      <input id="exf" type="file" accept="image/*" hidden />
+      <p class="hint" id="exh"></p>
+      <button type="button" id="exz" class="clr" hidden>
+        Restaurar datos originales
+      </button>
+      <div class="btns">
+        <button type="button" id="exc">Cancelar</button>
+        <button type="button" id="exg" class="pri">Guardar</button>
       </div>
     </dialog>
 
