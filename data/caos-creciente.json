@@ -1,0 +1,27 @@
+{
+  "v": 3,
+  "id": "caos-creciente",
+  "name": "Megaevolución: Caos Creciente (Chaos Rising) · Ninja Spinner (M4)",
+  "q": "Pokemon Chaos Rising",
+  "rel": [
+    ["Europa", "2026-05-22"],
+    ["Japón", "2026-03-13"],
+    ["Corea", "2026-05-01"]
+  ],
+  "rev": 1,
+  "ok": 4,
+  "mx": 6,
+  "fx": {
+    "CNY": 7.524,
+    "JPY": 177.58,
+    "KRW": 1499.01,
+    "TWD": 36.8,
+    "HKD": 8.8316
+  },
+  "fxNote": "CNY, HKD y KRW: referencia BCE del 16/10/2026. JPY y TWD: aproximados (mercado, mediados de octubre). Editables.",
+  "csv": "# nombre;sobres;pvp;extras (descripcion:valor|descripcion:valor);origen;idioma;fecha(AAAA-MM-DD)\n# Con 0 sobres el producto es solo referencia: se compara contra su PVP en euros\n# Extras: monedas 0,2; fundas 2; caja vacía ETB 3; dados 1; separadores 0,5. Energías 0,5 y promos de combate estimados\n# --- Europa (ES/EN) ---\nSobre suelto;1;4;;PVP indicado por el usuario. Fecha: lanzamiento de la expansión;ES;2026-05-22;\nSobre suelto enfundado;1;5;;PVP indicado por el usuario. Existencia en España sin confirmar. Fecha: lanzamiento de la expansión;ES;2026-05-22;\nSobre Fun Pack (3 cartas);1;2;;PVP indicado por el usuario. Trae solo 3 cartas. Fecha: lanzamiento de la expansión (no exacta);ES;2026-05-22;\nBlíster 1 sobre (Toxel);1;7,95;Moneda:0,2;PVP indicado por el usuario. Contenido según WikiDex: 1 sobre, moneda y promo Toxel (promo sin valorar). Fecha: lanzamiento de la expansión;ES;2026-05-22;\nBlíster 3 sobres (Charmeleon);3;19,99;;PVP de GAME.es. Fecha: lanzamiento de la expansión;ES;2026-05-22;\nBlíster Premium Checklane (Flygon);1;8,95;Moneda:0,2;PVP indicado por el usuario. Trae 1 sobre de 3 cartas y una moneda. Fecha: lanzamiento de la expansión;ES;2026-05-22;\nBlíster Premium Checklane (Pawmot);1;8,95;Moneda:0,2;PVP indicado por el usuario. Contenido supuesto igual al de Flygon (1 sobre de 3 cartas y una moneda), sin verificar. Fecha: lanzamiento de la expansión;ES;2026-05-22;\nBooster Bundle 6 sobres;6;34,99;;PVP de GAME.es. Fecha: lanzamiento de la expansión;ES;2026-05-22;https://media.game.es///ScreenShootsV2//258//258650//May_2026_Expansion_Booster_Bundle_%E2%80%93_INT_size__EU__Merchandising_258650_2_xxl.png\nCaja Combina y Combate 4 sobres;4;30;Mazo de 40 cartas jugable:3|Promo foil exclusiva (1 de 4):2;PVP indicado por el usuario. Kit de Prelanzamiento, eventos desde el 9 de mayo. Valores de extras estimados;ES;2026-05-09;\nETB 9 sobres;9;59,99;65 fundas:2|Energías:0,5|Dados y contadores:1|Moneda:0,2|Caja vacía:3|Separadores:0,5;PVP indicado por el usuario. Promos sin valorar. Fecha: lanzamiento de la expansión;ES;2026-05-22;\nETB Pokémon Center 11 sobres;11;59,99;65 fundas:2|Energías:0,5|Dados y contadores:1|Moneda:0,2|Caja vacía:3|Separadores:0,5;PVP indicado por el usuario. Solo Pokémon Center de EE. UU., Canadá y Reino Unido. Promos sin valorar;EN;2026-05-22;\nMedia caja 18 sobres;18;89,9;;PVP indicado por el usuario. Fecha: lanzamiento de la expansión;ES;2026-05-22;\nCaja 36 sobres;36;199,95;;PVP indicado por el usuario. Fecha: lanzamiento de la expansión;ES;2026-05-22;\n# --- Japón (Ninja Spinner, M4) ---\nCaja 30 sobres JP;30;5400 JPY;;180 yenes por sobre (5 cartas);JP;2026-03-13;\n# --- Corea ---\nCaja 30 sobres KR;30;30000 KRW;;Precio de lanzamiento (발매가) según Kream, no verificado en oficial. Fecha de lanzamiento según Kream;KO;2026-05-01;\n# --- China continental: sin producto de esta expansión encontrado ---",
+  "finds": [],
+  "noex": {},
+  "dates": {},
+  "serie": "Megaevolución"
+}

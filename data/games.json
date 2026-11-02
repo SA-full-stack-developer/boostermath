@@ -6,6 +6,7 @@
     "img": "assets/juegos/pokemon.webp",
     "expansions": [
       "oscuridad-absoluta.json",
+      "caos-creciente.json",
       "30-aniversario.json",
       "dominio-delta.json",
       "flowing-fists.json"
