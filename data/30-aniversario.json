@@ -40,5 +40,8 @@
     "Caja 20 sobres TW/HK": false
   },
   "dates": {},
-  "serie": "Edición especial"
+  "serie": "Edición especial",
+  "imgUrl": {
+    "Caja 20 sobres CN": "https://tcglevel.com/cdn/shop/files/booster-box-30-aniversario-chino.png?v=1789033242"
+  }
 }

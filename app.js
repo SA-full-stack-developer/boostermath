@@ -779,6 +779,7 @@ function render() {
     <div class="ic">
       <button class="x av star" type="button">⭐</button>
       <button class="x av own" type="button"></button>
+      <button class="x av addh" type="button" title="Añadir hallazgo de este producto" aria-label="Añadir hallazgo de este producto">➕</button>
       <button class="x rm" type="button" title="Eliminar producto" aria-label="Eliminar producto">🗑️</button>
     </div>
     <button class="nx" type="button"></button>
@@ -865,6 +866,7 @@ function render() {
       save();
       render();
     };
+    c.querySelector(".addh").onclick = () => addFor(x);
     c.querySelector(".edp").onclick = () => openEdit(x);
     c.querySelector(".cpy").onclick = () => openMove(x, false);
     c.querySelector(".mov").onclick = () => openMove(x, true);
@@ -1024,8 +1026,22 @@ function render() {
     paint(x, c);
     finds(x, c);
   };
-  let lastG = null;
-  A.forEach((x) => {
+  let lastG = null,
+    nRest = -1;
+  if (WM !== "own") {
+    const isOwn = (x) => !!use(x) && !!S.sealed[x.n],
+      got = A.filter(isOwn),
+      rest = A.filter((x) => !isOwn(x));
+    if (got.length) nRest = rest.length;
+    A = rest.concat(got);
+  }
+  A.forEach((x, ix) => {
+    if (ix === nRest) {
+      const h = document.createElement("div");
+      h.className = "gh";
+      h.textContent = "Obtenidos";
+      L.appendChild(h);
+    }
     if (WM === "own" && x._d.id !== lastG) {
       lastG = x._d.id;
       const h = document.createElement("div");
@@ -1129,6 +1145,7 @@ function free() {
   c.classList.add(v);
 }
 let FSALL = [],
+  FLT = false,
   FKW = false,
   FKF = false,
   FKS = false;
@@ -1178,9 +1195,25 @@ function fsApply(onlyEmpty) {
     const x = parse().find((y) => y.n === v);
     if (x && x.pvp && (!onlyEmpty || !$("fpr").value))
       $("fpr").value = String(Math.round(x.pvp * 100) / 100).replace(".", ",");
-    if (!onlyEmpty) $("fl").value = "ES";
+    const fl = $("fl"),
+      lg = x && x.lg;
+    if (lg && [...fl.options].some((o) => o.value === lg)) {
+      if (!onlyEmpty || !FLT) fl.value = lg;
+    } else if (!onlyEmpty) fl.value = "ES";
+    if (!onlyEmpty) FLT = false;
   }
 }
+function addFor(x) {
+  const bx = $("addbox");
+  $("fsq").value = "";
+  rebuildFs(x.n);
+  $("fpr").value = "";
+  bx.open = true;
+  fsApply();
+  bx.scrollIntoView({ behavior: "smooth", block: "start" });
+  setTimeout(() => $("ft").focus({ preventScroll: true }), 400);
+}
+$("fl").addEventListener("change", () => (FLT = true));
 $("fs").onchange = () => {
   fsApply();
   const v = $("fs").value;
@@ -1216,6 +1249,12 @@ $("fks").onclick = () => {
 $("addbox").addEventListener("toggle", () => {
   if ($("addbox").open) fsApply(true);
 });
+$("goup").onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+$("godn").onclick = () =>
+  window.scrollTo({
+    top: document.documentElement.scrollHeight,
+    behavior: "smooth",
+  });
 let fa = true;
 $("fa").onclick = () => {
   fa = !fa;
@@ -1290,6 +1329,7 @@ $("fclr").onclick = () => {
   FIMD = "";
   $("fimh").textContent = "";
   $("fl").selectedIndex = 0;
+  FLT = false;
   fa = true;
   $("fa").innerHTML = "&#9989; Disponible";
   syncMarks();
