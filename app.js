@@ -779,7 +779,6 @@ function render() {
     <div class="ic">
       <button class="x av star" type="button">⭐</button>
       <button class="x av own" type="button"></button>
-      <button class="x av addh" type="button" title="Añadir hallazgo de este producto" aria-label="Añadir hallazgo de este producto">➕</button>
       <button class="x rm" type="button" title="Eliminar producto" aria-label="Eliminar producto">🗑️</button>
     </div>
     <button class="nx" type="button"></button>
@@ -794,7 +793,7 @@ function render() {
 <details class="sh"><summary>Buscar en tiendas</summary><div class="shl"></div></details>
 <details class="mo"><summary>Detalles</summary><button type="button" class="edp">✏️ Editar producto</button><div class="desc"></div><div class="desc org"></div><div class="phr"><input class="pu" type="url" placeholder="URL de la foto (https://…)" aria-label="URL de la foto"><button type="button" class="pg">Guardar</button><button type="button" class="pf">Subir</button></div></details>
 <details class="ob"><summary>Observaciones</summary><textarea class="obt" rows="3" placeholder="Notas sobre este producto…" aria-label="Observaciones"></textarea></details>
-<details class="ac"><summary>Acciones</summary><div class="acb"><button type="button" class="cpy">📋 Copiar a…</button><button type="button" class="mov">➡️ Mover a…</button></div></details>`;
+<details class="ac"><summary>Acciones</summary><div class="acb"><button type="button" class="cpy">📋 Copiar a…</button><button type="button" class="mov">➡️ Mover a…</button><button type="button" class="addh">➕ Añadir hallazgo</button></div></details>`;
     c.querySelector(".nm").textContent = x.n;
     (opened[L.id + "|" + x.n] || []).forEach((s) => {
       const d = c.querySelector(s);
