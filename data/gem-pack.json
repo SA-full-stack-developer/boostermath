@@ -1,0 +1,26 @@
+{
+  "v": 3,
+  "id": "gem-pack",
+  "name": "Gem Pack",
+  "q": "Gem Pack",
+  "rel": [],
+  "rev": 2,
+  "ok": 6,
+  "mx": 7.5,
+  "fx": {
+    "CNY": 7.4925,
+    "JPY": 177.58,
+    "KRW": 1496.54,
+    "TWD": 36.8,
+    "HKD": 8.7859
+  },
+  "fxNote": "CNY, HKD y KRW: referencia BCE del 14/10/2026. JPY: cierre del 16/10. TWD: aproximado. Editables.",
+  "csv": "# nombre;sobres;pvp;extras (descripcion:valor|descripcion:valor);origen;idioma;fecha(AAAA-MM-DD);foto(URL)\n# Con 0 sobres el producto es solo referencia: se compara contra su PVP en euros\nGem Pack Badge Set (chino);3;39 CNY;Carta promo:0,25|Pin:1;Extras estimados;;2026-01-16;https://cardzone.es/cdn/shop/files/IMAGENESPRODUCTOS_1920x1920px_-2026-09-10T120757.737.png?v=1789034962&width=600\nGem Pack Vol. 7 Booster Box (chino);18;180 CNY;;PVP: 10 CNY por sobre x sobres;;2026-11-16;https://flashstore.es/wp-content/uploads/2026/10/gemvol7.jpg\nGem Pack Vol. 6 Booster Box (chino);15;150 CNY;;PVP: 10 CNY por sobre x sobres;;2026-08-07;https://flashstore.es/wp-content/uploads/2026/08/vol6.jpg\nGem Pack Vol. 5 Booster Box (chino);15;150 CNY;;PVP: 10 CNY por sobre x sobres;;2026-04-24;https://flashstore.es/wp-content/uploads/2026/05/gem5pack.jpg\nGem Pack Vol. 4 Booster Box (chino);15;150 CNY;;PVP: 10 CNY por sobre x sobres;;2026-02-06;https://flashstore.es/wp-content/uploads/2026/03/vol44.jpg\nGem Pack Vol. 3 Booster Box (chino);15;150 CNY;;PVP: 10 CNY por sobre x sobres;;2025-09-26;https://flashstore.es/wp-content/uploads/2025/10/Diseno_sin_tituloffd.jpg\nGem Pack Vol. 2 Booster Box (chino);15;150 CNY;;PVP: 10 CNY por sobre x sobres;;2025-05-16;https://flashstore.es/wp-content/uploads/2025/04/gem2caja.jpg\n",
+  "finds": [],
+  "noex": {},
+  "sealed": {},
+  "dates": {
+    "Gem Pack Vol. 7 Booster Box (chino)": "2026-11-16"
+  },
+  "logo": "https://imgs.search.brave.com/hMlylLiW2kZziuDVOSr6hK6OFKbOZSHR_dzH25HXvZQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMuc3F1YXJlc3Bh/Y2UtY2RuLmNvbS9j/b250ZW50L3YxLzY4/MmEzMzA3ZjZiZDk1/MGU0Yjk4Y2JiOS8w/ODlkMjA0My04N2E0/LTRhZjgtOWY5OC1l/MmIxM2Q3MTY4ODMv/Z2VtK3BhY2srdm9s/KzUrY2FyZCtsaXN0/K2xvZ28ud2VicA"
+}

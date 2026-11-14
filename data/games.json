@@ -5,8 +5,13 @@
     "icon": "⚡",
     "img": "assets/juegos/pokemon.webp",
     "expansions": [
-      "oscuridad-absoluta.json",
+      "gem-pack.json",
+      "megaevolucion.json",
+      "fuegos-fantasmales.json",
+      "heroes-ascendentes.json",
+      "equilibrio-perfecto.json",
       "caos-creciente.json",
+      "oscuridad-absoluta.json",
       "30-aniversario.json",
       "dominio-delta.json",
       "flowing-fists.json"

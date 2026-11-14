@@ -586,7 +586,6 @@ dialog::backdrop {
 }
 #xpl {
   margin: 8px 0;
-  max-height: 50vh;
   overflow: auto;
 }
 .pgh {
@@ -854,9 +853,6 @@ footer {
 #xpd {
   width: min(920px, 94vw);
 }
-#xpl {
-  max-height: 70vh;
-}
 .xg {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -903,9 +899,6 @@ footer {
 @media (min-width: 760px) {
   .xg {
     grid-template-columns: repeat(4, 1fr);
-  }
-  .xc {
-    aspect-ratio: 1 / 1;
   }
 
   .flex40 {

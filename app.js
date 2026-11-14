@@ -1417,6 +1417,22 @@ $("cp").onclick = () => {
     $("csv").select();
   }
 };
+const csvImgs = (csv, urls) => {
+  if (!urls || typeof urls !== "object") return csv;
+  return String(csv)
+    .split("\n")
+    .map((l) => {
+      const t = l.trim();
+      if (!t || t[0] === "#") return l;
+      const p = t.split(";"),
+        u = okUrl(urls[p[0]]);
+      if (!u) return l;
+      while (p.length < 8) p.push("");
+      p[7] = u.replace(/;/g, "%3B");
+      return p.join(";");
+    })
+    .join("\n");
+};
 const packOne = (d, s, wi) => {
   const gd = GAMES.find((g) => g.custom && g.id === gameOf(d));
   const o = {
@@ -1430,12 +1446,11 @@ const packOne = (d, s, wi) => {
     rev: d.rev || 1,
     ok: s.ok,
     mx: s.mx,
-    csv: s.csv,
+    csv: csvImgs(s.csv, s.imgUrl),
     finds: s.finds,
     fx: s.fx,
     noex: s.noex,
     sealed: s.sealed,
-    imgUrl: s.imgUrl,
     dates: s.dates,
     fav: s.fav,
     wish: s.wish,
@@ -2151,6 +2166,19 @@ $("rx").onclick = async () => {
     if (!EXPS.length) EXPS.push(newBlank());
     openExp(EXPS.find((e) => gameOf(e) === meta.game) || EXPS[0]);
   } else openExp(cur);
+};
+$("rxa").onclick = async () => {
+  const srv = EXPS.filter((e) => !e.custom);
+  if (
+    !(await ask(
+      "Restablecer todo",
+      `Se borrarán tus hallazgos, ediciones, fotos y marcas de las ${srv.length} expansiones del servidor y volverán a los datos originales. Las expansiones propias no se tocan.`,
+      "Restablecer todo",
+    ))
+  )
+    return;
+  srv.forEach((e) => LS.del("s." + e.id));
+  location.reload();
 };
 const newBlank = () => ({
   id: "mi-expansion",

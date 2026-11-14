@@ -1,8 +1,288 @@
 [
   {
+    "d": "2025-08-01",
+    "t": "Megaevolución · Caja 30 sobres Mega Brave JP",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-08-01",
+    "t": "Megaevolución · Caja 30 sobres Mega Symphonia JP",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-08-01",
+    "t": "Megaevolución · Premium Trainer Box MEGA JP",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-08-01",
+    "t": "Megaevolución · Set Pokémon Center Mega Brave JP",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-08-01",
+    "t": "Megaevolución · Set Pokémon Center Mega Symphonia JP",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-08-15",
+    "t": "Megaevolución · Caja 30 sobres Mega Brave TW/HK",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-08-15",
+    "t": "Megaevolución · Caja 30 sobres Mega Symphonia TW/HK",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-08-15",
+    "t": "Megaevolución · Set 10 sobres PLUS TW/HK",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-09-26",
+    "t": "Fuegos Fantasmales · Caja 30 sobres JP (Inferno X)",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-09-26",
+    "t": "Megaevolución · Caja 30 sobres Mega Brave KR",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-09-26",
+    "t": "Megaevolución · Caja 30 sobres Mega Symphonia KR",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-09",
+    "t": "Fuegos Fantasmales · Caja 30 sobres TW/HK",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-10-09",
+    "t": "Fuegos Fantasmales · Set valor 40 sobres TW/HK",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Sobre suelto",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Sobre suelto enfundado",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Blíster 1 sobre",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Blíster Checklane",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Blíster Premium Checklane",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Blíster 3 sobres",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Booster Bundle 6 sobres",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Caja Combina y Combate 4 sobres",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Minilatas Megahéroes (varios diseños)",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Media caja 18 sobres",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Caja 36 sobres",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · Colección Mega-Latias ex",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · ETB 9 sobres (Mega-Lucario)",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-10-10",
+    "t": "Megaevolución · ETB 9 sobres (Mega-Gardevoir)",
+    "c": "#0f766e"
+  },
+  {
+    "d": "2025-11-01",
+    "t": "Fuegos Fantasmales · Caja Combina y Combate 4 sobres",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · Sobre suelto",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · Sobre suelto enfundado",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · Blíster Checklane (Cottonee y Whimsicott)",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · Blíster Premium Checklane (Blaziken e Hydrapple)",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · Blíster 3 sobres (Cyndaquil)",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · Booster Bundle 6 sobres",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · ETB 9 sobres",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · ETB Pokémon Center 11 sobres",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · Media caja 18 sobres",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · Caja 36 sobres",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-14",
+    "t": "Fuegos Fantasmales · Colección ultraprémium Mega-Charizard X ex",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-11-28",
+    "t": "Héroes Ascendentes · Caja 10 sobres JP (MEGA Dream ex)",
+    "c": "#f97316"
+  },
+  {
+    "d": "2025-11-28",
+    "t": "Fuegos Fantasmales · Caja 30 sobres KR",
+    "c": "#92400e"
+  },
+  {
+    "d": "2025-12-05",
+    "t": "Héroes Ascendentes · Caja 10 sobres TW/HK",
+    "c": "#f97316"
+  },
+  {
+    "d": "2025-12-19",
+    "t": "Héroes Ascendentes · Start Deck 100 Battle Collection JP",
+    "c": "#f97316"
+  },
+  {
+    "d": "2025-12-19",
+    "t": "Héroes Ascendentes · Start Deck 100 Battle Collection CoroCiao Ver. JP",
+    "c": "#f97316"
+  },
+  {
+    "d": "2026-01-23",
+    "t": "Equilibrio Perfecto · Caja 30 sobres JP (Nihil Zero)",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-01-23",
+    "t": "Equilibrio Perfecto · Special Card Set Mega-Gallade ex JP",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-01-23",
+    "t": "Héroes Ascendentes · Caja 10 sobres KR",
+    "c": "#f97316"
+  },
+  {
     "d": "2026-01-30",
     "t": "30.º aniversario · Caja Pokémon Day 2026 Special Collection",
     "c": "#d0b011"
+  },
+  {
+    "d": "2026-01-30",
+    "t": "Héroes Ascendentes · Sobre suelto",
+    "c": "#f97316"
+  },
+  {
+    "d": "2026-01-30",
+    "t": "Héroes Ascendentes · Colección con pegatinas especiales (Charmander o Gastly)",
+    "c": "#f97316"
+  },
+  {
+    "d": "2026-02-06",
+    "t": "Equilibrio Perfecto · Caja 30 sobres TW/HK",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-02-06",
+    "t": "Equilibrio Perfecto · Set 10 sobres PLUS TW/HK",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-02-20",
+    "t": "Héroes Ascendentes · Colección Erika o Laureano",
+    "c": "#f97316"
+  },
+  {
+    "d": "2026-02-20",
+    "t": "Héroes Ascendentes · Minilata (varios diseños)",
+    "c": "#f97316"
+  },
+  {
+    "d": "2026-02-20",
+    "t": "Héroes Ascendentes · ETB 9 sobres",
+    "c": "#f97316"
+  },
+  {
+    "d": "2026-02-20",
+    "t": "Héroes Ascendentes · ETB Pokémon Center 11 sobres",
+    "c": "#f97316"
+  },
+  {
+    "d": "2026-02-20",
+    "t": "Fuegos Fantasmales · Latas Mega-Charizard X o Y",
+    "c": "#92400e"
   },
   {
     "d": "2026-03-13",
@@ -10,9 +290,84 @@
     "c": "#db2777"
   },
   {
+    "d": "2026-03-13",
+    "t": "Equilibrio Perfecto · Caja 30 sobres KR",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-03-14",
+    "t": "Equilibrio Perfecto · Caja Combina y Combate 4 sobres",
+    "c": "#7c3aed"
+  },
+  {
     "d": "2026-03-20",
     "t": "30.º aniversario · First Partners Illustration Collection 3 sobres",
     "c": "#d0b011"
+  },
+  {
+    "d": "2026-03-20",
+    "t": "Héroes Ascendentes · Colección prémium con póster (Mega-Gardevoir o Mega-Lucario)",
+    "c": "#f97316"
+  },
+  {
+    "d": "2026-03-20",
+    "t": "Héroes Ascendentes · Colección Primeros Compañeros con pin de lujo",
+    "c": "#f97316"
+  },
+  {
+    "d": "2026-03-27",
+    "t": "Equilibrio Perfecto · Sobre suelto",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-03-27",
+    "t": "Equilibrio Perfecto · Sobre suelto enfundado",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-03-27",
+    "t": "Equilibrio Perfecto · Blíster 1 sobre (Makuhita)",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-03-27",
+    "t": "Equilibrio Perfecto · Blíster 3 sobres (Chikorita)",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-03-27",
+    "t": "Equilibrio Perfecto · Booster Bundle 6 sobres",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-03-27",
+    "t": "Equilibrio Perfecto · ETB 9 sobres",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-03-27",
+    "t": "Equilibrio Perfecto · ETB Pokémon Center 11 sobres",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-03-27",
+    "t": "Equilibrio Perfecto · Media caja 18 sobres",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-03-27",
+    "t": "Equilibrio Perfecto · Caja 36 sobres",
+    "c": "#7c3aed"
+  },
+  {
+    "d": "2026-04-24",
+    "t": "Héroes Ascendentes · Booster Bundle 6 sobres",
+    "c": "#f97316"
+  },
+  {
+    "d": "2026-04-24",
+    "t": "Héroes Ascendentes · Caja ex Mega-Meganium, Mega-Emboar o Mega-Feraligatr",
+    "c": "#f97316"
   },
   {
     "d": "2026-05-01",
@@ -88,6 +443,11 @@
     "d": "2026-05-22",
     "t": "Caos Creciente · Caja 36 sobres",
     "c": "#db2777"
+  },
+  {
+    "d": "2026-05-22",
+    "t": "Equilibrio Perfecto · Colección prémium Mega-Zygarde ex",
+    "c": "#7c3aed"
   },
   {
     "d": "2026-06-05",
